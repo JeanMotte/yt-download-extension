@@ -7,11 +7,7 @@
   
   "mounts": [
     "source=${localWorkspaceFolder},target=/app/workspace,type=bind,consistency=cached",
-    "type=bind,source=${env:SSH_AUTH_SOCK},target=/tmp/ssh-agent.sock"
   ],
-  "containerEnv": {
-    "SSH_AUTH_SOCK": "/tmp/ssh-agent.sock"
-  },
   "remoteUser": "node",
   "customizations": {
     "vscode": {
