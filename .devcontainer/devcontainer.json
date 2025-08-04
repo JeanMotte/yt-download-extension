@@ -6,7 +6,7 @@
   "workspaceFolder": "/app/workspace",
   
   "mounts": [
-    "source=${localWorkspaceFolder},target=/app/workspace,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder},target=/app/workspace,type=bind,consistency=cached"
   ],
   "remoteUser": "node",
   "customizations": {
