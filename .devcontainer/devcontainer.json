@@ -9,7 +9,6 @@
     "source=${localWorkspaceFolder},target=/app/workspace,type=bind,consistency=cached",
     "type=bind,source=${env:SSH_AUTH_SOCK},target=/tmp/ssh-agent.sock"
   ],
-  // Tells Git and SSH inside the container where to find the forwarded socket
   "containerEnv": {
     "SSH_AUTH_SOCK": "/tmp/ssh-agent.sock"
   },
