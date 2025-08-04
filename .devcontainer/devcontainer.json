@@ -1,0 +1,49 @@
+{
+  "name": "WXT Browser Extension Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceFolder": "/app/workspace",
+  
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/app/workspace,type=bind,consistency=cached"
+  ],
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "wxt.wxt-vscode",
+        "Vue.volar",
+        "esbenp.prettier-vscode",
+        "biomejs.biome",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "dsznajder.es7-react-js-snippets",
+        "eamodio.gitlens",
+        "github.copilot-chat",
+        "yoavbls.pretty-ts-errors",
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "always"
+        },
+        // Using Biome as the default formatter (as you preferred)
+        "[typescript]": { "editor.defaultFormatter": "biomejs.biome" },
+        "[typescriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
+        "[javascript]": { "editor.defaultFormatter": "biomejs.biome" },
+
+        // Recommended for WXT's file-based routing and structure
+        "files.exclude": {
+          "**/.wxt": true,
+          "**/node_modules": true
+        }
+      }
+    }
+  },
+
+  "postCreateCommand": "bash ./.devcontainer/init.sh",
+
+  "forwardPorts": [3001]
+}
