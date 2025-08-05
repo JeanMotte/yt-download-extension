@@ -16,3 +16,6 @@ build/
 .pnpm-store
 .output
 chrome
+
+# Generated API client
+src/api/

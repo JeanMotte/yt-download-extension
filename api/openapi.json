@@ -1,0 +1,752 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "YT Download Service",
+    "description": "Allows a google authenticated user to download videos from YouTube.",
+    "contact": {
+      "name": "Jean Motte",
+      "email": "jijimotte@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/login/google": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login Google",
+        "description": "Redirect to Google for authentication.",
+        "operationId": "login_google_api_auth_login_google_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Auth Google",
+        "description": "Process Google callback, authenticate user, and return a JWT access token.",
+        "operationId": "auth_google_api_auth_google_callback_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Me",
+        "description": "Return the current authenticated user's details.",
+        "operationId": "me_api_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/video/formats": {
+      "post": {
+        "tags": [
+          "Video"
+        ],
+        "summary": "Get Formats",
+        "description": "Endpoint to get processed and user-friendly video formats.",
+        "operationId": "get_formats_api_video_formats_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VideoURL"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/video/download": {
+      "post": {
+        "tags": [
+          "Video"
+        ],
+        "summary": "Download Full Video",
+        "description": "Download a video and logs the action in the background.",
+        "operationId": "download_full_video_api_video_download_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/video/download/sample": {
+      "post": {
+        "tags": [
+          "Video"
+        ],
+        "summary": "Download Optimal Video Sample",
+        "description": "Download a specific time-range.",
+        "operationId": "download_optimal_video_sample_api_video_download_sample_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadSampleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/history/": {
+      "get": {
+        "tags": [
+          "History"
+        ],
+        "summary": "Get User Download History",
+        "description": "Retrieves the download history for the currently authenticated user.",
+        "operationId": "get_user_history_api_history__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/History"
+                  },
+                  "type": "array",
+                  "title": "Response Get User History Api History  Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "History"
+        ],
+        "summary": "Clear User Download History",
+        "description": "Clears the download history for the currently authenticated user.",
+        "operationId": "clear_user_history_api_history__delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/history/{history_id}": {
+      "delete": {
+        "tags": [
+          "History"
+        ],
+        "summary": "Delete Specific Download History Entry",
+        "description": "Deletes a specific download history entry for the currently authenticated user.",
+        "operationId": "delete_user_history_entry_api_history__history_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": [ ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "history_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "History Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Check",
+        "description": "Health check endpoint.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AudioOption": {
+        "properties": {
+          "format_id": {
+            "type": "string",
+            "title": "Format Id"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "format_id"
+        ],
+        "title": "AudioOption",
+        "description": "Model for an audio format option."
+      },
+      "DownloadRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "format_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Format Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "DownloadRequest",
+        "description": "Pydantic model for a download request."
+      },
+      "DownloadSampleRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "format_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Format Id"
+          },
+          "start_time": {
+            "type": "string",
+            "title": "Start Time",
+            "description": "Start time in HH:MM:SS",
+            "examples": [
+              "00:01:10"
+            ]
+          },
+          "end_time": {
+            "type": "string",
+            "title": "End Time",
+            "description": "End time in HH:MM:SS",
+            "examples": [
+              "00:01:25"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "start_time",
+          "end_time"
+        ],
+        "title": "DownloadSampleRequest",
+        "description": "Schema for downloading a video sample."
+      },
+      "FormatsResponse": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "thumbnail_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thumbnail Url"
+          },
+          "resolutions": {
+            "items": {
+              "$ref": "#/components/schemas/ResolutionOption"
+            },
+            "type": "array",
+            "title": "Resolutions"
+          },
+          "audio_only": {
+            "items": {
+              "$ref": "#/components/schemas/AudioOption"
+            },
+            "type": "array",
+            "title": "Audio Only"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "resolutions",
+          "audio_only"
+        ],
+        "title": "FormatsResponse",
+        "description": "Response model for available video formats."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "History": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "yt_video_url": {
+            "type": "string",
+            "title": "Yt Video Url"
+          },
+          "video_title": {
+            "type": "string",
+            "title": "Video Title"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution"
+          },
+          "format_id": {
+            "type": "string",
+            "title": "Format Id"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "created_at",
+          "updated_at",
+          "id",
+          "user_id",
+          "yt_video_url",
+          "video_title",
+          "resolution",
+          "format_id",
+          "start_time",
+          "end_time"
+        ],
+        "title": "History",
+        "description": "The history of downloaded videos."
+      },
+      "ResolutionOption": {
+        "properties": {
+          "resolution": {
+            "type": "string",
+            "title": "Resolution"
+          },
+          "format_id": {
+            "type": "string",
+            "title": "Format Id"
+          },
+          "has_audio": {
+            "type": "boolean",
+            "title": "Has Audio"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resolution",
+          "format_id",
+          "has_audio"
+        ],
+        "title": "ResolutionOption",
+        "description": "Model for a video resolution option."
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse",
+        "description": "Pydantic model for the token response."
+      },
+      "UserRead": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "UserRead",
+        "description": "Model for reading user data from the database."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VideoURL": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "VideoURL",
+        "description": "Pydantic model for validating a YouTube video URL."
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": { },
+            "tokenUrl": "/api/auth/login/google"
+          }
+        }
+      }
+    }
+  }
+}
