@@ -17,7 +17,7 @@ const render = (view: string) => {
   app.innerHTML = view;
 };
 
-const main = async () => {
+const main = () => {
   render(loginView);
   document.getElementById('login')?.addEventListener('click', async () => {
     const token = await browser.identity.getAuthToken({ interactive: true });
