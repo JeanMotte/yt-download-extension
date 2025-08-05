@@ -13,3 +13,6 @@ dist/
 build/
 
 .env*
+.pnpm-store
+.output
+chrome
