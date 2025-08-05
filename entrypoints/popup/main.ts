@@ -1,5 +1,7 @@
 /// <reference types="wxt/client" />
 
+import { getApiConfig } from '../../src/api/config';
+import { AuthApi } from '../../src/api/services';
 import './style.css';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -9,22 +11,36 @@ const loginView = `
   <button id="login">Login with Google</button>
 `;
 
-const mainView = `
-  <h1>Hello user</h1>
+const mainView = (user: string) => `
+  <h1>Hello ${user}</h1>
 `;
 
 const render = (view: string) => {
   app.innerHTML = view;
 };
 
-const main = () => {
-  render(loginView);
-  document.getElementById('login')?.addEventListener('click', async () => {
-    const token = await browser.identity.getAuthToken({ interactive: true });
-    if (token) {
-      render(mainView);
+const main = async () => {
+  try {
+    const config = await getApiConfig();
+    if (!config.accessToken) {
+      render(loginView);
+      document.getElementById('login')?.addEventListener('click', async () => {
+        const token = await browser.identity.getAuthToken({ interactive: true });
+        if (token) {
+          const authApi = new AuthApi(await getApiConfig());
+          const user = await authApi.meApiAuthMeGet();
+          render(mainView(user.email));
+        }
+      });
+    } else {
+      const authApi = new AuthApi(config);
+      const user = await authApi.meApiAuthMeGet();
+      render(mainView(user.email));
     }
-  });
+  } catch (error) {
+    console.error(error);
+    render('<h1>Something went wrong</h1>');
+  }
 };
 
 main();

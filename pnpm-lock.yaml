@@ -7,7 +7,14 @@ settings:
 importers:
 
   .:
+    dependencies:
+      dotenv:
+        specifier: ^17.2.1
+        version: 17.2.1
     devDependencies:
+      '@types/node':
+        specifier: ^24.2.0
+        version: 24.2.0
       wxt:
         specifier: ^0.20.7
         version: 0.20.7(@types/node@24.2.0)(jiti@2.5.1)(rollup@4.46.2)

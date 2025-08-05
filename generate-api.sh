@@ -30,6 +30,7 @@ mkdir -p $OUTPUT_DIR/models
 echo "Moving generated files..."
 mv $TEMP_DIR/apis/*.ts $OUTPUT_DIR/services/
 mv $TEMP_DIR/models/*.ts $OUTPUT_DIR/models/
+mv $TEMP_DIR/runtime.ts $OUTPUT_DIR/
 
 # 6. Clean up the temporary directory
 echo "Cleaning up temporary directory..."
