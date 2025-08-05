@@ -2,11 +2,11 @@ import { defineConfig } from 'wxt';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  manifest: {
+  manifest: () => ({
     name: 'YouLoad',
     permissions: ['identity', 'tabs'],
     oauth2: {
-      client_id: process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_OAUTH_CLIENT_ID',
+      client_id: import.meta.env.WXT_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_OAUTH_CLIENT_ID',
       scopes: ['openid', 'email', 'profile'],
     },
     browser_specific_settings: {
@@ -14,5 +14,5 @@ export default defineConfig({
         id: 'youload@wxt.dev',
       },
     },
-  },
+  }),
 });

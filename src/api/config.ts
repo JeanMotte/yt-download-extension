@@ -10,7 +10,7 @@ const getAccessToken = async () => {
 export const getApiConfig = async (): Promise<Configuration> => {
   const accessToken = await getAccessToken();
   const config: ConfigurationParameters = {
-    basePath: process.env.API_BASE_URL || 'http://localhost:8000/api',
+    basePath: import.meta.env.WXT_API_BASE_URL || 'http://localhost:8000',
     accessToken,
     // baseOptions: {
     //   headers: {

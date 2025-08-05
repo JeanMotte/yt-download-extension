@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile"
   },
   "workspaceFolder": "/app/workspace",
-  
+  "runArgs": ["--env-file", ".devcontainer/.devcontainer.env"],
   "mounts": [
     "source=${localWorkspaceFolder},target=/app/workspace,type=bind,consistency=cached"
   ],
