@@ -1,3 +1,5 @@
+/// <reference types="wxt/client" />
+
 import './style.css';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -16,15 +18,13 @@ const render = (view: string) => {
 };
 
 const main = async () => {
-  const token = await browser.identity.getAuthToken({ interactive: false });
-  if (token) {
-    render(mainView);
-  } else {
-    render(loginView);
-    document.getElementById('login')?.addEventListener('click', () => {
-      browser.identity.getAuthToken({ interactive: true });
-    });
-  }
+  render(loginView);
+  document.getElementById('login')?.addEventListener('click', async () => {
+    const token = await browser.identity.getAuthToken({ interactive: true });
+    if (token) {
+      render(mainView);
+    }
+  });
 };
 
 main();
