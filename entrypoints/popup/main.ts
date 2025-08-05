@@ -1,5 +1,6 @@
 /// <reference types="wxt/client" />
 
+import { browser } from 'wxt/browser';
 import { getApiConfig } from '../../src/api/config';
 import { AuthApi } from '../../src/api/services';
 import './style.css';
@@ -21,6 +22,13 @@ const render = (view: string) => {
 
 const main = async () => {
   try {
+    const manifest = browser.runtime.getManifest();
+    if (manifest.oauth2?.client_id?.startsWith('YOUR_GOOGLE_OAUTH_CLIENT_ID')) {
+      render(
+        '<h1>Configuration needed</h1><p>Please replace <code>YOUR_GOOGLE_OAUTH_CLIENT_ID</code> in <code>wxt.config.ts</code> with your actual Google OAuth2 client ID.</p>',
+      );
+      return;
+    }
     const config = await getApiConfig();
     if (!config.accessToken) {
       render(loginView);
@@ -39,7 +47,7 @@ const main = async () => {
     }
   } catch (error) {
     console.error(error);
-    render('<h1>Something went wrong</h1>');
+    render(`<h1>Something went wrong: ${error.message}</h1>`);
   }
 };
 

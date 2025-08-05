@@ -12,7 +12,7 @@ jspm_packages/
 dist/
 build/
 
-.env*
+.env
 .pnpm-store
 .output
 chrome
