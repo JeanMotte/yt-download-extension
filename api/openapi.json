@@ -23,7 +23,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { }
+                "schema": {
+
+                }
               }
             }
           }
@@ -45,6 +47,48 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login/google/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login Google Token",
+        "description": "Authenticate user using a Google access token obtained from the extension.",
+        "operationId": "login_google_token_api_auth_login_google_token_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleToken"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -74,7 +118,7 @@
         },
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -121,7 +165,7 @@
         },
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -149,7 +193,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { }
+                "schema": {
+
+                }
               }
             }
           },
@@ -166,7 +212,7 @@
         },
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -194,7 +240,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { }
+                "schema": {
+
+                }
               }
             }
           },
@@ -211,7 +259,7 @@
         },
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -242,7 +290,7 @@
         },
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -258,14 +306,16 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { }
+                "schema": {
+
+                }
               }
             }
           }
         },
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -280,7 +330,7 @@
         "operationId": "delete_user_history_entry_api_history__history_id__delete",
         "security": [
           {
-            "OAuth2PasswordBearer": [ ]
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -325,7 +375,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { }
+                "schema": {
+
+                }
               }
             }
           }
@@ -468,6 +520,20 @@
         ],
         "title": "FormatsResponse",
         "description": "Response model for available video formats."
+      },
+      "GoogleToken": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "GoogleToken",
+        "description": "Model for Google OAuth token."
       },
       "HTTPValidationError": {
         "properties": {
@@ -742,7 +808,9 @@
         "type": "oauth2",
         "flows": {
           "password": {
-            "scopes": { },
+            "scopes": {
+
+            },
             "tokenUrl": "/api/auth/login/google"
           }
         }

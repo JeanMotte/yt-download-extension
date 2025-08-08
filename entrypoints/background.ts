@@ -1,5 +1,7 @@
 /// <reference types="wxt/client" />
 
+import { browser } from 'wxt/browser';
+
 const YOUTUBE_REGEX =
   /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|youtube-nocookie\.com)\/(watch\?v=|embed\/|v\/|.+\?v=)?([a-zA-Z0-9_-]{11})/;
 

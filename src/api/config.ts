@@ -1,22 +1,14 @@
-/// <reference types="wxt/client" />
-
+import { getToken } from '../../utils/auth';
 import { Configuration, type ConfigurationParameters } from './runtime';
 
-const getAccessToken = async () => {
-  const token = await browser.identity.getAuthToken({ interactive: false });
-  return token ?? '';
-};
-
 export const getApiConfig = async (): Promise<Configuration> => {
-  const accessToken = await getAccessToken();
+  // Get OUR application's JWT from storage
+  const appToken = await getToken(); 
+
   const config: ConfigurationParameters = {
     basePath: import.meta.env.WXT_API_BASE_URL || 'http://localhost:8000',
-    accessToken,
-    // baseOptions: {
-    //   headers: {
-    //     'X-Requested-With': 'XMLHttpRequest',
-    //   },
-    // },
+    // The accessToken for the API client is our own JWT, not the Google one.
+    accessToken: appToken || undefined,
   };
   return new Configuration(config);
 };

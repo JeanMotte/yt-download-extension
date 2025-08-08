@@ -4,7 +4,7 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   manifest: () => ({
     name: 'YouLoad',
-    permissions: ['identity', 'tabs'],
+    permissions: ['identity', 'tabs', 'storage'],
     oauth2: {
       client_id: import.meta.env.WXT_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_OAUTH_CLIENT_ID',
       scopes: ['openid', 'email', 'profile'],
@@ -14,5 +14,8 @@ export default defineConfig({
         id: 'youload@wxt.dev',
       },
     },
+    host_permissions: [
+      "http://localhost:8000/*",
+    ]
   }),
 });
