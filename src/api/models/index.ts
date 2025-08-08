@@ -4,6 +4,7 @@ export * from './AudioOption';
 export * from './DownloadRequest';
 export * from './DownloadSampleRequest';
 export * from './FormatsResponse';
+export * from './GoogleToken';
 export * from './HTTPValidationError';
 export * from './History';
 export * from './ResolutionOption';

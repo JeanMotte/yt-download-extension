@@ -15,15 +15,25 @@
 
 import * as runtime from '../runtime';
 import type {
+  GoogleToken,
+  HTTPValidationError,
   TokenResponse,
   UserRead,
 } from '../models/index';
 import {
+    GoogleTokenFromJSON,
+    GoogleTokenToJSON,
+    HTTPValidationErrorFromJSON,
+    HTTPValidationErrorToJSON,
     TokenResponseFromJSON,
     TokenResponseToJSON,
     UserReadFromJSON,
     UserReadToJSON,
 } from '../models/index';
+
+export interface LoginGoogleTokenApiAuthLoginGoogleTokenPostRequest {
+    googleToken: GoogleToken;
+}
 
 /**
  * AuthApi - interface
@@ -61,6 +71,22 @@ export interface AuthApiInterface {
      * Login Google
      */
     loginGoogleApiAuthLoginGoogleGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any>;
+
+    /**
+     * Authenticate user using a Google access token obtained from the extension.
+     * @summary Login Google Token
+     * @param {GoogleToken} googleToken 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApiInterface
+     */
+    loginGoogleTokenApiAuthLoginGoogleTokenPostRaw(requestParameters: LoginGoogleTokenApiAuthLoginGoogleTokenPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TokenResponse>>;
+
+    /**
+     * Authenticate user using a Google access token obtained from the extension.
+     * Login Google Token
+     */
+    loginGoogleTokenApiAuthLoginGoogleTokenPost(googleToken: GoogleToken, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TokenResponse>;
 
     /**
      * Return the current authenticated user\'s details.
@@ -147,6 +173,47 @@ export class AuthApi extends runtime.BaseAPI implements AuthApiInterface {
      */
     async loginGoogleApiAuthLoginGoogleGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
         const response = await this.loginGoogleApiAuthLoginGoogleGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Authenticate user using a Google access token obtained from the extension.
+     * Login Google Token
+     */
+    async loginGoogleTokenApiAuthLoginGoogleTokenPostRaw(requestParameters: LoginGoogleTokenApiAuthLoginGoogleTokenPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TokenResponse>> {
+        if (requestParameters['googleToken'] == null) {
+            throw new runtime.RequiredError(
+                'googleToken',
+                'Required parameter "googleToken" was null or undefined when calling loginGoogleTokenApiAuthLoginGoogleTokenPost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/api/auth/login/google/token`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GoogleTokenToJSON(requestParameters['googleToken']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TokenResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Authenticate user using a Google access token obtained from the extension.
+     * Login Google Token
+     */
+    async loginGoogleTokenApiAuthLoginGoogleTokenPost(googleToken: GoogleToken, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TokenResponse> {
+        const response = await this.loginGoogleTokenApiAuthLoginGoogleTokenPostRaw({ googleToken: googleToken }, initOverrides);
         return await response.value();
     }
 
