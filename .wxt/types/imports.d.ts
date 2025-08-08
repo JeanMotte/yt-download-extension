@@ -14,7 +14,10 @@ declare global {
   const defineUnlistedScript: typeof import('wxt/utils/define-unlisted-script')['defineUnlistedScript']
   const defineWxtPlugin: typeof import('wxt/utils/define-wxt-plugin')['defineWxtPlugin']
   const fakeBrowser: typeof import('wxt/testing')['fakeBrowser']
+  const getToken: typeof import('/app/workspace/utils/auth')['getToken']
   const injectScript: typeof import('wxt/utils/inject-script')['injectScript']
+  const removeToken: typeof import('/app/workspace/utils/auth')['removeToken']
+  const saveToken: typeof import('/app/workspace/utils/auth')['saveToken']
   const storage: typeof import('wxt/utils/storage')['storage']
   const useAppConfig: typeof import('wxt/utils/app-config')['useAppConfig']
 }

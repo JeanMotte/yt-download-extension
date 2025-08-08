@@ -40,16 +40,13 @@ const handleLogin = async () => {
     const tempConfig = await getApiConfig();
     const authApi = new AuthApi(tempConfig);
     
-    // You'll need to regenerate your client to get this method,
-    // or call it with a manual fetch.
-    // Let's assume you've regenerated it.
     const response = await authApi.loginGoogleTokenApiAuthLoginGoogleTokenPost({
-      googleToken: { token: googleAuth.token }
+      token: googleAuth.token
     });
 
     console.log('App JWT received from backend.');
     // 3. Save our application's JWT to storage
-    await saveToken(response.access_token);
+    await saveToken(response.accessToken);
 
     // 4. Now that the token is saved, we can fetch the user's data
     await showMainView();
