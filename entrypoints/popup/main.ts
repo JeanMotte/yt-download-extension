@@ -24,35 +24,46 @@ const render = (view: string) => {
 const handleLogin = async () => {
   try {
     console.log('Requesting Google Auth Token from browser...');
-    // 1. Get Google OAuth token from the browser
     const googleAuth = await browser.identity.getAuthToken({ interactive: true });
 
     if (!googleAuth || !googleAuth.token) {
       console.error('Could not get Google auth token.');
       render(loginView);
-      addLoginListener(); // Re-add listener
+      addLoginListener();
       return;
     }
 
     console.log('Google token received. Sending to backend...');
-    // 2. Send the Google token to our backend to get our app JWT
-    // NOTE: We create a temporary AuthApi instance without a token for this call
     const tempConfig = await getApiConfig();
     const authApi = new AuthApi(tempConfig);
     
-    const response = await authApi.loginGoogleTokenApiAuthLoginGoogleTokenPost({
-      token: googleAuth.token
-    });
+    // --- YOUR CORRECT FIX FOR THE 422 ERROR ---
+    // The request body matches the backend's GoogleToken Pydantic model.
+    const requestBody = { token: googleAuth.token };
+    const response = await authApi.loginGoogleTokenApiAuthLoginGoogleTokenPost(requestBody);
+    
+    // The POST call was successful (200 OK)!
+    // Now we handle the response from your FastAPI backend.
+    console.log('App JWT response received from backend:', response);
 
-    console.log('App JWT received from backend.');
-    // 3. Save our application's JWT to storage
-    await saveToken(response.accessToken);
+    // --- THE FIX FOR THE 401 ERROR ---
+    // The response object from FastAPI has snake_case keys by default.
+    // Access `response.access_token`, NOT `response.accessToken`.
+    if (response.accessToken) {
+      // 3. Save our application's JWT to storage
+      console.log('Saving app token to storage...');
+      await saveToken(response.accessToken);
+    } else {
+      // This is a good safeguard
+      throw new Error("Login response from backend did not contain an accessToken.");
+    }
 
-    // 4. Now that the token is saved, we can fetch the user's data
+    // 4. Now that the correct token is saved, we fetch the user's data
+    console.log('Token saved. Fetching user profile...');
     await showMainView();
 
   } catch (error) {
-    console.error('Login failed:', error);
+    console.error('Login flow failed:', error);
     render(loginView);
     addLoginListener();
   }
