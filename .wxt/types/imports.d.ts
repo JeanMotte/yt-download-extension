@@ -14,12 +14,20 @@ declare global {
   const defineUnlistedScript: typeof import('wxt/utils/define-unlisted-script')['defineUnlistedScript']
   const defineWxtPlugin: typeof import('wxt/utils/define-wxt-plugin')['defineWxtPlugin']
   const fakeBrowser: typeof import('wxt/testing')['fakeBrowser']
+  const getApiConfig: typeof import('/app/workspace/utils/config')['getApiConfig']
   const getToken: typeof import('/app/workspace/utils/auth')['getToken']
   const injectScript: typeof import('wxt/utils/inject-script')['injectScript']
   const removeToken: typeof import('/app/workspace/utils/auth')['removeToken']
   const saveToken: typeof import('/app/workspace/utils/auth')['saveToken']
   const storage: typeof import('wxt/utils/storage')['storage']
   const useAppConfig: typeof import('wxt/utils/app-config')['useAppConfig']
+  const useCallback: typeof import('react')['useCallback']
+  const useContext: typeof import('react')['useContext']
+  const useEffect: typeof import('react')['useEffect']
+  const useMemo: typeof import('react')['useMemo']
+  const useReducer: typeof import('react')['useReducer']
+  const useRef: typeof import('react')['useRef']
+  const useState: typeof import('react')['useState']
 }
 // for type re-export
 declare global {
