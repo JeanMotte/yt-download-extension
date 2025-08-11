@@ -147,8 +147,9 @@ const App = () => {
     return await authApi.meApiAuthMeGet();
   };
 
-    const handleDownload = async (data: { resolution: string }) => {
-    // Prevent multiple downloads at once
+  const handleDownload = async (data: { resolution: string }) => {
+    console.log('test')
+      // Prevent multiple downloads at once
     if (isDownloading) return;
 
     setIsDownloading(true);
@@ -166,21 +167,25 @@ const App = () => {
               url: videoUrl,
               formatId: data.resolution,
       }});
+
+      console.log('Download response:', response);
       
       // Check if the request was successful
       if (!response.ok) {
         // Try to get a meaningful error message from the backend
-        const errorText = await response.text();
-        throw new Error(`Download failed with status ${response.status}: ${errorText}`);
+        throw new Error(`Download failed with status ${response.status}`);
       }
 
       // Get the video data as a Blob
       const videoBlob = await response.blob();
+      console.log('blob', videoBlob);
       // Create a clean filename from the video title
       const safeFilename = videoTitle.replace(/[^a-z0-9_.-]/gi, '_').substring(0, 100) + '.mp4';
+      console.log(`Safe filename for download: ${safeFilename}`);
       
       // Utility to trigger the browser's download prompt
       await saveBlobAsFile(videoBlob, safeFilename);
+
 
     } catch (error) {
       console.error('An error occurred during download:', error);
