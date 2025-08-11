@@ -24,6 +24,7 @@
     "wxt": "^0.20.7"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.34.1",
     "dotenv": "^17.2.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
