@@ -54,7 +54,7 @@ export interface GetFormatsApiVideoFormatsPostRequest {
  */
 export interface VideoApiInterface {
     /**
-     * Download a video and logs the action in the background.
+     * Download a video and returns it as a file attachment.
      * @summary Download Full Video
      * @param {DownloadRequest} downloadRequest 
      * @param {*} [options] Override http request option.
@@ -64,7 +64,7 @@ export interface VideoApiInterface {
     downloadFullVideoApiVideoDownloadPostRaw(requestParameters: DownloadFullVideoApiVideoDownloadPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>>;
 
     /**
-     * Download a video and logs the action in the background.
+     * Download a video and returns it as a file attachment.
      * Download Full Video
      */
     downloadFullVideoApiVideoDownloadPost(downloadRequest: DownloadRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any>;
@@ -109,7 +109,7 @@ export interface VideoApiInterface {
 export class VideoApi extends runtime.BaseAPI implements VideoApiInterface {
 
     /**
-     * Download a video and logs the action in the background.
+     * Download a video and returns it as a file attachment.
      * Download Full Video
      */
     async downloadFullVideoApiVideoDownloadPostRaw(requestParameters: DownloadFullVideoApiVideoDownloadPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -153,7 +153,7 @@ export class VideoApi extends runtime.BaseAPI implements VideoApiInterface {
     }
 
     /**
-     * Download a video and logs the action in the background.
+     * Download a video and returns it as a file attachment.
      * Download Full Video
      */
     async downloadFullVideoApiVideoDownloadPost(downloadRequest: DownloadRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {

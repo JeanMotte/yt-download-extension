@@ -176,7 +176,7 @@
           "Video"
         ],
         "summary": "Download Full Video",
-        "description": "Download a video and logs the action in the background.",
+        "description": "Download a video and returns it as a file attachment.",
         "operationId": "download_full_video_api_video_download_post",
         "requestBody": {
           "content": {
