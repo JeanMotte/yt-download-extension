@@ -127,10 +127,13 @@ export class VideoApi extends runtime.BaseAPI implements VideoApiInterface {
         headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-        }
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
 
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
 
         let urlPath = `/api/video/download`;
 
@@ -177,10 +180,13 @@ export class VideoApi extends runtime.BaseAPI implements VideoApiInterface {
         headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-        }
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
 
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
 
         let urlPath = `/api/video/download/sample`;
 
@@ -227,10 +233,13 @@ export class VideoApi extends runtime.BaseAPI implements VideoApiInterface {
         headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-        }
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
 
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
 
         let urlPath = `/api/video/formats`;
 

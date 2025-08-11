@@ -99,10 +99,13 @@ export class HistoryApi extends runtime.BaseAPI implements HistoryApiInterface {
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-        }
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
 
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
 
         let urlPath = `/api/history/`;
 
@@ -146,10 +149,13 @@ export class HistoryApi extends runtime.BaseAPI implements HistoryApiInterface {
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-        }
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
 
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
 
         let urlPath = `/api/history/{history_id}`;
         urlPath = urlPath.replace(`{${"history_id"}}`, encodeURIComponent(String(requestParameters['historyId'])));
@@ -182,10 +188,13 @@ export class HistoryApi extends runtime.BaseAPI implements HistoryApiInterface {
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-        }
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
 
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
 
         let urlPath = `/api/history/`;
 
