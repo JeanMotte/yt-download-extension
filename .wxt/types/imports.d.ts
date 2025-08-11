@@ -8,6 +8,7 @@ declare global {
   const MatchPattern: typeof import('wxt/utils/match-patterns')['MatchPattern']
   const VideoDownloader: typeof import('/app/workspace/components/VideoDownloader')['VideoDownloader']
   const browser: typeof import('wxt/browser')['browser']
+  const clearVideoCache: typeof import('/app/workspace/utils/cache')['clearVideoCache']
   const createIframeUi: typeof import('wxt/utils/content-script-ui/iframe')['createIframeUi']
   const createIntegratedUi: typeof import('wxt/utils/content-script-ui/integrated')['createIntegratedUi']
   const createShadowRootUi: typeof import('wxt/utils/content-script-ui/shadow-root')['createShadowRootUi']
@@ -19,9 +20,11 @@ declare global {
   const fakeBrowser: typeof import('wxt/testing')['fakeBrowser']
   const getApiConfig: typeof import('/app/workspace/utils/config')['getApiConfig']
   const getToken: typeof import('/app/workspace/utils/auth')['getToken']
+  const getVideoDetailsFromCache: typeof import('/app/workspace/utils/cache')['getVideoDetailsFromCache']
   const injectScript: typeof import('wxt/utils/inject-script')['injectScript']
   const removeToken: typeof import('/app/workspace/utils/auth')['removeToken']
   const saveToken: typeof import('/app/workspace/utils/auth')['saveToken']
+  const saveVideoDetailsToCache: typeof import('/app/workspace/utils/cache')['saveVideoDetailsToCache']
   const storage: typeof import('wxt/utils/storage')['storage']
   const useAppConfig: typeof import('wxt/utils/app-config')['useAppConfig']
   const useCallback: typeof import('react')['useCallback']
@@ -61,4 +64,7 @@ declare global {
   // @ts-ignore
   export type { ScriptPublicPath, InjectScriptOptions } from 'wxt/utils/inject-script'
   import('wxt/utils/inject-script')
+  // @ts-ignore
+  export type { VideoCacheData } from '/app/workspace/utils/cache'
+  import('/app/workspace/utils/cache')
 }

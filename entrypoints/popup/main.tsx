@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { browser } from 'wxt/browser';
 import { Layout } from '../../components/Layout';
@@ -6,6 +6,7 @@ import { VideoDownloader } from '../../components/VideoDownloader';
 import type { ResolutionOption, UserRead } from '../../src/api/models';
 import { AuthApi, VideoApi } from '../../src/api/services';
 import { getToken, removeToken, saveToken } from '../../utils/auth';
+import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
 import { getApiConfig } from '../../utils/config';
 import './style.css';
 
@@ -17,6 +18,8 @@ const App = () => {
   const [videoTitle, setVideoTitle] = useState('');
   const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
+
+  const [isLoadingVideo, setIsLoadingVideo] = useState(true);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -37,27 +40,68 @@ const App = () => {
     initializeApp();
   }, []);
 
-  useEffect(() => {
-    if (authStatus === 'authenticated') {
-      getVideoDetails();
-    }
-  }, [authStatus]);
-
-  const getVideoDetails = async () => {
+    const getVideoDetails = useCallback(async (token: string) => {
+    setIsLoadingVideo(true);
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (tab?.url && tab.id) {
-      console.log('Current tab URL:', tab.url);
+
+    if (!tab?.url || !tab.id) {
+      setIsLoadingVideo(false);
+      return;
+    }
+
+    // 1. Check the cache first
+    const cachedData = await getVideoDetailsFromCache(tab.url);
+    if (cachedData) {
+      setVideoTitle(cachedData.title);
+      setResolutions(cachedData.resolutions);
+      setVideoUrl(cachedData.url);
+      setIsLoadingVideo(false);
+      return;
+    }
+
+    // 2. Fetch data if no cache
+    try {
       setVideoUrl(tab.url);
-      const response = await browser.tabs.sendMessage(tab.id, { type: 'GET_VIDEO_DETAILS' });
-      console.log('response from content script:', response);
-      setVideoTitle(response.title);
       
-      const config = await getApiConfig();
-      const videoApi = new VideoApi(config);
-      const formatsResponse = await videoApi.getFormatsApiVideoFormatsPost({ url: tab.url });
-      setResolutions(formatsResponse.resolutions ?? []);
+      // Fetch title and formats in parallel to speed it up
+      const [titleResponse, formatsResponse] = await Promise.all([
+        browser.tabs.sendMessage(tab.id, { type: 'GET_VIDEO_DETAILS' }),
+        (async () => {
+          const config = await getApiConfig(token);
+          const videoApi = new VideoApi(config);
+          return videoApi.getFormatsApiVideoFormatsPost({ url: tab.url! });
+        })(),
+      ]);
+
+      const title = titleResponse.title;
+      const resolutionsData = formatsResponse.resolutions ?? [];
+
+      setVideoTitle(title);
+      setResolutions(resolutionsData);
+      
+      // 3. Save newly fetched data to cache
+      await saveVideoDetailsToCache(tab.url, { title, resolutions: resolutionsData });
+
+    } catch (error) {
+      console.error('Failed to fetch video details:', error);
+    } finally {
+      setIsLoadingVideo(false);
+    }
+  }, []);
+
+    useEffect(() => {
+  // We fetch details only when we have a confirmed user object
+  const fetchDetailsForUser = async () => {
+    if (user) {
+      // We need the token that authenticated this user.
+      const token = await getToken(); // It's safe to get it here now.
+      if (token) {
+        await getVideoDetails(token);
+      }
     }
   };
+  fetchDetailsForUser();
+}, [user, getVideoDetails]);
 
   const handleLogin = async () => {
     try {
