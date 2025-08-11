@@ -80,7 +80,6 @@ const App = () => {
       ) : (
         <div>
           <h1>YouLoad</h1>
-          <p>Please log in to continue.</p>
           <button onClick={handleLogin} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src={googleLogo} alt="Google logo" style={{ marginRight: '10px', height: '20px' }} />
             Login with Google
