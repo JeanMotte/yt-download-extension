@@ -9,37 +9,47 @@ import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getApiConfig } from '../../utils/config';
 import './style.css';
 
+type AuthStatus = 'pending' | 'authenticated' | 'unauthenticated';
+
 const App = () => {
   const [user, setUser] = useState<UserRead | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [authStatus, setAuthStatus] = useState<AuthStatus>('pending');
   const [videoTitle, setVideoTitle] = useState('');
   const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
     const initializeApp = async () => {
-      try {
-        const existingToken = await getToken();
-        if (existingToken) {
+      const existingToken = await getToken();
+      if (existingToken) {
+        try {
           const userData = await getMe(existingToken);
           setUser(userData);
-          await getVideoDetails();
+          setAuthStatus('authenticated');
+        } catch (error) {
+          await removeToken();
+          setAuthStatus('unauthenticated');
         }
-      } catch (error) {
-        await removeToken();
-        setUser(null);
-      } finally {
-        setLoading(false);
+      } else {
+        setAuthStatus('unauthenticated');
       }
     };
     initializeApp();
   }, []);
 
+  useEffect(() => {
+    if (authStatus === 'authenticated') {
+      getVideoDetails();
+    }
+  }, [authStatus]);
+
   const getVideoDetails = async () => {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (tab?.url && tab.id) {
+      console.log('Current tab URL:', tab.url);
       setVideoUrl(tab.url);
       const response = await browser.tabs.sendMessage(tab.id, { type: 'GET_VIDEO_DETAILS' });
+      console.log('response from content script:', response);
       setVideoTitle(response.title);
       
       const config = await getApiConfig();
@@ -51,6 +61,7 @@ const App = () => {
 
   const handleLogin = async () => {
     try {
+      setAuthStatus('pending');
       const googleAuth = await browser.identity.getAuthToken({ interactive: true });
       if (!googleAuth?.token) {
         throw new Error('Could not get Google auth token.');
@@ -70,15 +81,18 @@ const App = () => {
       await saveToken(appJwt);
       const userData = await getMe(appJwt);
       setUser(userData);
+      setAuthStatus('authenticated');
     } catch (error) {
       await removeToken();
       setUser(null);
+      setAuthStatus('unauthenticated');
     }
   };
 
   const handleLogout = async () => {
     await removeToken();
     setUser(null);
+    setAuthStatus('unauthenticated');
   };
 
   const getMe = async (token: string): Promise<UserRead> => {
@@ -96,13 +110,13 @@ const App = () => {
     });
   };
 
-  if (loading) {
+  if (authStatus === 'pending') {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
-      {user ? (
+      {authStatus === 'authenticated' && user ? (
         <Layout onLogout={handleLogout}>
           <VideoDownloader
             videoTitle={videoTitle}
