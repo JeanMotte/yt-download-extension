@@ -1,16 +1,20 @@
+/// <reference types="wxt/client" />
+
 import { browser } from 'wxt/browser';
 
-browser.runtime.onMessage.addListener((message) => {
-  if (message.type === 'GET_VIDEO_DETAILS') {
-    const titleElement = document.querySelector('yt-formatted-string.style-scope.ytd-watch-metadata');
-    const title = titleElement ? titleElement.textContent : '';
-    return Promise.resolve({ title });
-  }
-});
-
 export default defineContentScript({
-  matches: ['*://*.youtube.com/*'],
+  matches: ['*://*.youtube.com/watch?v=*'], // More specific match pattern
+  
   main() {
-    // The listener is already set up above
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.type === 'GET_VIDEO_DETAILS') {
+        const titleElement = document.querySelector('h1.ytd-watch-metadata');
+        const title = titleElement ? titleElement.textContent?.trim() : 'Video Title Not Found';
+        sendResponse({ title });
+
+        // Must return `true` to keep the message channel open until `sendResponse` is called.
+        return true; 
+      }
+    });
   },
 });
