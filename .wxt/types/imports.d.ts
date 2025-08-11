@@ -2,8 +2,11 @@
 export {}
 declare global {
   const ContentScriptContext: typeof import('wxt/utils/content-script-context')['ContentScriptContext']
+  const GreetUser: typeof import('/app/workspace/components/User')['GreetUser']
   const InvalidMatchPattern: typeof import('wxt/utils/match-patterns')['InvalidMatchPattern']
+  const Layout: typeof import('/app/workspace/components/Layout')['Layout']
   const MatchPattern: typeof import('wxt/utils/match-patterns')['MatchPattern']
+  const VideoDownloader: typeof import('/app/workspace/components/VideoDownloader')['VideoDownloader']
   const browser: typeof import('wxt/browser')['browser']
   const createIframeUi: typeof import('wxt/utils/content-script-ui/iframe')['createIframeUi']
   const createIntegratedUi: typeof import('wxt/utils/content-script-ui/integrated')['createIntegratedUi']

@@ -1,32 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { browser } from 'wxt/browser';
-import type { UserRead } from '../../src/api/models';
-import { AuthApi } from '../../src/api/services';
+import { Layout } from '../../components/Layout';
+import { VideoDownloader } from '../../components/VideoDownloader';
+import type { ResolutionOption, UserRead } from '../../src/api/models';
+import { AuthApi, VideoApi } from '../../src/api/services';
 import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getApiConfig } from '../../utils/config';
 import './style.css';
-import googleLogo from '/google-logo.svg';
 
 const App = () => {
   const [user, setUser] = useState<UserRead | null>(null);
   const [loading, setLoading] = useState(true);
+  const [videoTitle, setVideoTitle] = useState('');
+  const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
+  const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
     const initializeApp = async () => {
-      const existingToken = await getToken();
-      if (existingToken) {
-        try {
+      try {
+        const existingToken = await getToken();
+        if (existingToken) {
           const userData = await getMe(existingToken);
           setUser(userData);
-        } catch (error) {
-          await removeToken();
+          await getVideoDetails();
         }
+      } catch (error) {
+        await removeToken();
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     initializeApp();
   }, []);
+
+  const getVideoDetails = async () => {
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tab?.url && tab.id) {
+      setVideoUrl(tab.url);
+      const response = await browser.tabs.sendMessage(tab.id, { type: 'GET_VIDEO_DETAILS' });
+      setVideoTitle(response.title);
+      
+      const config = await getApiConfig();
+      const videoApi = new VideoApi(config);
+      const formatsResponse = await videoApi.getFormatsApiVideoFormatsPost({ url: tab.url });
+      setResolutions(formatsResponse.resolutions ?? []);
+    }
+  };
 
   const handleLogin = async () => {
     try {
@@ -66,6 +87,15 @@ const App = () => {
     return await authApi.meApiAuthMeGet();
   };
 
+  const handleDownload = async (data: { resolution: string }) => {
+    const config = await getApiConfig();
+    const videoApi = new VideoApi(config);
+    await videoApi.downloadFullVideoApiVideoDownloadPost({
+      url: videoUrl,
+      formatId: data.resolution,
+    });
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -73,15 +103,18 @@ const App = () => {
   return (
     <div>
       {user ? (
-        <div>
-          <h1>Hello {user.firstName} {user.lastName}</h1>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+        <Layout onLogout={handleLogout}>
+          <VideoDownloader
+            videoTitle={videoTitle}
+            resolutions={resolutions}
+            onSubmit={handleDownload}
+          />
+        </Layout>
       ) : (
         <div>
           <h1>YouLoad</h1>
           <button onClick={handleLogin} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={googleLogo} alt="Google logo" style={{ marginRight: '10px', height: '20px' }} />
+            <img src="/google-logo.svg" alt="Google logo" style={{ marginRight: '10px', height: '20px' }} />
             Login with Google
           </button>
         </div>

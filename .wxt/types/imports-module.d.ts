@@ -18,6 +18,9 @@ declare module '#imports' {
   export { InvalidMatchPattern, MatchPattern } from 'wxt/utils/match-patterns';
   export { useState, useCallback, useMemo, useEffect, useRef, useContext, useReducer } from 'react';
   export { fakeBrowser } from 'wxt/testing';
+  export { Layout } from '../components/Layout';
+  export { GreetUser } from '../components/User';
+  export { VideoDownloader } from '../components/VideoDownloader';
   export { saveToken, getToken, removeToken } from '../utils/auth';
   export { getApiConfig } from '../utils/config';
 }
