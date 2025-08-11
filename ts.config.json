@@ -1,6 +1,7 @@
 {
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "types": ["wxt/client", "vite/client", "node"],
     "baseUrl": ".",
     "paths": {
