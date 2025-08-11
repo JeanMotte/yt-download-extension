@@ -1,14 +1,20 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { ResolutionOption } from '../src/api/models';
+import type { ResolutionOption } from '../src/api/models';
 
 interface VideoDownloaderProps {
   videoTitle: string;
   resolutions: ResolutionOption[];
+  isDownloading: boolean;
   onSubmit: (data: { resolution: string }) => void;
 }
 
-export const VideoDownloader: React.FC<VideoDownloaderProps> = ({ videoTitle, resolutions, onSubmit }) => {
+export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
+  videoTitle,
+  resolutions,
+  isDownloading,
+  onSubmit,
+}) => {
   const { register, handleSubmit } = useForm<{ resolution: string }>();
 
   return (
@@ -21,13 +27,16 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({ videoTitle, re
         <label htmlFor="resolution">Resolution</label>
         <select id="resolution" {...register('resolution')}>
           {resolutions.map((res) => (
-            <option key={res.formatId} value={res.formatId}>
+            <option key={res.formatId} value={res.formatId!}>
               {res.resolution}
             </option>
           ))}
         </select>
       </div>
-      <button type="submit">Download</button>
+      {/* Disable the button and change text when isDownloading is true */}
+      <button type="submit" disabled={isDownloading}>
+        {isDownloading ? 'Downloading...' : 'Download'}
+      </button>
     </form>
   );
 };

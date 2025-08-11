@@ -8,6 +8,7 @@ import { AuthApi, VideoApi } from '../../src/api/services';
 import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
 import { getApiConfig } from '../../utils/config';
+import { saveBlobAsFile } from '../../utils/download';
 import './style.css';
 
 type AuthStatus = 'pending' | 'authenticated' | 'unauthenticated';
@@ -20,6 +21,7 @@ const App = () => {
   const [videoUrl, setVideoUrl] = useState('');
 
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -145,13 +147,46 @@ const App = () => {
     return await authApi.meApiAuthMeGet();
   };
 
-  const handleDownload = async (data: { resolution: string }) => {
-    const config = await getApiConfig();
-    const videoApi = new VideoApi(config);
-    await videoApi.downloadFullVideoApiVideoDownloadPost({
-      url: videoUrl,
-      formatId: data.resolution,
-    });
+    const handleDownload = async (data: { resolution: string }) => {
+    // Prevent multiple downloads at once
+    if (isDownloading) return;
+
+    setIsDownloading(true);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("User not authenticated for download.");
+
+      const config = await getApiConfig(token);
+      const videoApi = new VideoApi(config);
+
+      // Use the `...Raw` method from the generated client.
+      // Gives the raw Response object instead of trying to parse it as JSON.
+      const response: Response = await videoApi.downloadFullVideoApiVideoDownloadPostRaw({
+            downloadRequest: {
+              url: videoUrl,
+              formatId: data.resolution,
+      }});
+      
+      // Check if the request was successful
+      if (!response.ok) {
+        // Try to get a meaningful error message from the backend
+        const errorText = await response.text();
+        throw new Error(`Download failed with status ${response.status}: ${errorText}`);
+      }
+
+      // Get the video data as a Blob
+      const videoBlob = await response.blob();
+      // Create a clean filename from the video title
+      const safeFilename = videoTitle.replace(/[^a-z0-9_.-]/gi, '_').substring(0, 100) + '.mp4';
+      
+      // Utility to trigger the browser's download prompt
+      await saveBlobAsFile(videoBlob, safeFilename);
+
+    } catch (error) {
+      console.error('An error occurred during download:', error);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   if (authStatus === 'pending') {
@@ -162,11 +197,16 @@ const App = () => {
     <div>
       {authStatus === 'authenticated' && user ? (
         <Layout onLogout={handleLogout}>
-          <VideoDownloader
-            videoTitle={videoTitle}
-            resolutions={resolutions}
-            onSubmit={handleDownload}
-          />
+          {isLoadingVideo ? (
+            <div>Loading video details...</div>
+          ) : (
+            <VideoDownloader
+              videoTitle={videoTitle}
+              resolutions={resolutions}
+              isDownloading={isDownloading} // <-- Pass the state down
+              onSubmit={handleDownload}
+            />
+          )}
         </Layout>
       ) : (
         <div>

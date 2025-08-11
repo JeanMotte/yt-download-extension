@@ -23,6 +23,7 @@ declare global {
   const getVideoDetailsFromCache: typeof import('/app/workspace/utils/cache')['getVideoDetailsFromCache']
   const injectScript: typeof import('wxt/utils/inject-script')['injectScript']
   const removeToken: typeof import('/app/workspace/utils/auth')['removeToken']
+  const saveBlobAsFile: typeof import('/app/workspace/utils/download')['saveBlobAsFile']
   const saveToken: typeof import('/app/workspace/utils/auth')['saveToken']
   const saveVideoDetailsToCache: typeof import('/app/workspace/utils/cache')['saveVideoDetailsToCache']
   const storage: typeof import('wxt/utils/storage')['storage']

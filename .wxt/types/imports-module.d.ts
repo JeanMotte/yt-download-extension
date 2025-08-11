@@ -24,4 +24,5 @@ declare module '#imports' {
   export { saveToken, getToken, removeToken } from '../utils/auth';
   export { saveVideoDetailsToCache, getVideoDetailsFromCache, clearVideoCache, VideoCacheData } from '../utils/cache';
   export { getApiConfig } from '../utils/config';
+  export { saveBlobAsFile } from '../utils/download';
 }
