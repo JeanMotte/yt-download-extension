@@ -147,52 +147,52 @@ const App = () => {
     return await authApi.meApiAuthMeGet();
   };
 
-  const handleDownload = async (data: { resolution: string }) => {
-    console.log('test')
-      // Prevent multiple downloads at once
-    if (isDownloading) return;
+const handleDownload = async (data: { resolution: string }) => {
+  if (isDownloading) return;
 
-    setIsDownloading(true);
-    try {
-      const token = await getToken();
-      if (!token) throw new Error("User not authenticated for download.");
+  setIsDownloading(true);
+  try {
+    const token = await getToken();
+    if (!token) throw new Error("User not authenticated for download.");
 
-      const config = await getApiConfig(token);
-      const videoApi = new VideoApi(config);
+    const config = await getApiConfig(token);
+    const videoApi = new VideoApi(config);
 
-      // Use the `...Raw` method from the generated client.
-      // Gives the raw Response object instead of trying to parse it as JSON.
-      const response: Response = await videoApi.downloadFullVideoApiVideoDownloadPostRaw({
-            downloadRequest: {
-              url: videoUrl,
-              formatId: data.resolution,
-      }});
+    console.log('Calling download API...');
 
-      console.log('Download response:', response);
-      
-      // Check if the request was successful
-      if (!response.ok) {
-        // Try to get a meaningful error message from the backend
-        throw new Error(`Download failed with status ${response.status}`);
-      }
+    // 1. Get the "blob-like" object from the API.
+    const apiResult: any = await videoApi.downloadFullVideoApiVideoDownloadPost({
+          url: videoUrl,
+          formatId: data.resolution,
+    });
 
-      // Get the video data as a Blob
-      const videoBlob = await response.blob();
-      console.log('blob', videoBlob);
-      // Create a clean filename from the video title
-      const safeFilename = videoTitle.replace(/[^a-z0-9_.-]/gi, '_').substring(0, 100) + '.mp4';
-      console.log(`Safe filename for download: ${safeFilename}`);
-      
-      // Utility to trigger the browser's download prompt
-      await saveBlobAsFile(videoBlob, safeFilename);
+    console.log(`API result received. Type: ${typeof apiResult}, Size: ${apiResult?.size}`);
+
+    // 2. Create a genuine Blob object from the API result.
+    // The Blob constructor takes an array of "parts".
+    const videoBlob = new Blob([apiResult], { type: 'video/mp4' });
+
+    console.log(`Genuine Blob created with size: ${videoBlob.size}`);
+    
+    // 3. The rest of the logic can now proceed with the real Blob.
+    const safeFilename = videoTitle.replace(/[^a-z0-9_.-]/gi, '_').substring(0, 100) + '.mp4';
+    
+    await saveBlobAsFile(videoBlob, safeFilename);
+    
+    console.log('Download process completed successfully.');
+    alert('Download started! Check your downloads folder.');
 
 
-    } catch (error) {
-      console.error('An error occurred during download:', error);
-    } finally {
-      setIsDownloading(false);
+  } catch (error) {
+    // The generated client will throw a `ResponseError` for non-2xx responses.
+    console.error('An error occurred during download:', error);
+    if (error instanceof Error) {
+        alert(`Download failed: ${error.message}`);
     }
-  };
+  } finally {
+    setIsDownloading(false);
+  }
+};
 
   if (authStatus === 'pending') {
     return <div>Loading...</div>;
