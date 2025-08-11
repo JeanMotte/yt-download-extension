@@ -7,7 +7,7 @@ import type { ResolutionOption, UserRead } from '../../src/api/models';
 import { AuthApi, VideoApi } from '../../src/api/services';
 import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
-import { getApiConfig } from '../../utils/config';
+import { baseUrl, getApiConfig } from '../../utils/config';
 import { saveBlobAsFile } from '../../utils/download';
 import './style.css';
 
@@ -155,39 +155,43 @@ const handleDownload = async (data: { resolution: string }) => {
     const token = await getToken();
     if (!token) throw new Error("User not authenticated for download.");
 
-    const config = await getApiConfig(token);
-    const videoApi = new VideoApi(config);
+    const downloadUrl = `${baseUrl}/api/video/download`;
 
-    console.log('Calling download API...');
+    const requestBody = {
+      url: videoUrl,
+      format_id: data.resolution,
+    };
 
-    // 1. Get the "blob-like" object from the API.
-    const apiResult: any = await videoApi.downloadFullVideoApiVideoDownloadPost({
-          url: videoUrl,
-          formatId: data.resolution,
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    };
+
+    const response = await fetch(downloadUrl, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(requestBody),
     });
 
-    console.log(`API result received. Type: ${typeof apiResult}, Size: ${apiResult?.size}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Download failed with status ${response.status}: ${errorText}`);
+    }
 
-    // 2. Create a genuine Blob object from the API result.
-    // The Blob constructor takes an array of "parts".
-    const videoBlob = new Blob([apiResult], { type: 'video/mp4' });
-
-    console.log(`Genuine Blob created with size: ${videoBlob.size}`);
+    const videoBlob = await response.blob();
     
-    // 3. The rest of the logic can now proceed with the real Blob.
+    console.log(`Correctly created Blob with size: ${videoBlob.size}`);
+
     const safeFilename = videoTitle.replace(/[^a-z0-9_.-]/gi, '_').substring(0, 100) + '.mp4';
     
     await saveBlobAsFile(videoBlob, safeFilename);
     
     console.log('Download process completed successfully.');
-    alert('Download started! Check your downloads folder.');
-
 
   } catch (error) {
-    // The generated client will throw a `ResponseError` for non-2xx responses.
     console.error('An error occurred during download:', error);
     if (error instanceof Error) {
-        alert(`Download failed: ${error.message}`);
+      alert(`Download failed: ${error.message}`);
     }
   } finally {
     setIsDownloading(false);

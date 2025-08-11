@@ -11,3 +11,5 @@ export const getApiConfig = async (tokenOverride?: string): Promise<Configuratio
   };
   return new Configuration(configParams);
 };
+
+export const baseUrl = import.meta.env.WXT_API_BASE_URL || 'http://localhost:8000';
