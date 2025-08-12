@@ -62,7 +62,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
           <Button
             onClick={onDownloadSample}
             sx={{ textTransform: 'none' }}
-            disabled={isDownloadingSample || !isValid} // Disable if downloading or form is invalid [1, 23]
+            disabled={isDownloadingSample || !isValid}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
             variant="outlined"
           >
