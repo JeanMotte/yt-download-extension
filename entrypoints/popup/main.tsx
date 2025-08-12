@@ -21,7 +21,8 @@ const App = () => {
   const [videoUrl, setVideoUrl] = useState('');
 
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [isDownloadingFull, setIsDownloadingFull] = useState(false);
+  const [isDownloadingSample, setIsDownloadingSample] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -148,9 +149,9 @@ const App = () => {
   };
 
 const handleDownload = async (data: { resolution: string }) => {
-  if (isDownloading) return;
+  if (isDownloadingFull) return;
 
-  setIsDownloading(true);
+  setIsDownloadingFull(true);
   try {
     const token = await getToken();
     if (!token) throw new Error("User not authenticated for download.");
@@ -194,7 +195,7 @@ const handleDownload = async (data: { resolution: string }) => {
       alert(`Download failed: ${error.message}`);
     }
   } finally {
-    setIsDownloading(false);
+    setIsDownloadingFull(false);
   }
 };
 
@@ -212,7 +213,8 @@ const handleDownload = async (data: { resolution: string }) => {
             <VideoDownloader
               videoTitle={videoTitle}
               resolutions={resolutions}
-              isDownloadingFull={isDownloading} // <-- Pass the state down
+              isDownloadingFull={isDownloadingFull}
+              isDownloadingSample={isDownloadingSample}
               onSubmit={handleDownload}
             />
           )}
