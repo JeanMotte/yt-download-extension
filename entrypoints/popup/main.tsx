@@ -212,7 +212,7 @@ const handleDownload = async (data: { resolution: string }) => {
             <VideoDownloader
               videoTitle={videoTitle}
               resolutions={resolutions}
-              isDownloading={isDownloading} // <-- Pass the state down
+              isDownloadingFull={isDownloading} // <-- Pass the state down
               onSubmit={handleDownload}
             />
           )}
