@@ -76,27 +76,25 @@ const App = () => {
     try {
       setVideoUrl(tab.url);
       
-      // Assume the content script now returns title and duration
-      const [detailsResponse, formatsResponse] = await Promise.all([
-        browser.tabs.sendMessage(tab.id, { type: 'GET_VIDEO_DETAILS' }),
-        (async () => {
-          const config = await getApiConfig(token);
-          const videoApi = new VideoApi(config);
-          return videoApi.getFormatsApiVideoFormatsPost({ url: tab.url! });
-        })(),
-      ]);
+      // SINGLE API CALL: Get title, duration, and resolutions from your backend.
+      const config = await getApiConfig(token);
+      const videoApi = new VideoApi(config);
+      const formatsResponse = await videoApi.getFormatsApiVideoFormatsPost({ url: tab.url });
 
-      const { title, duration } = detailsResponse; // Destructure duration
-      const resolutionsData = formatsResponse.resolutions ?? [];
+      // 3. Destructure all data from the single response
+      const { title, duration, resolutions } = formatsResponse;
+      const resolutionsData = resolutions ?? [];
 
+      // 4. Set state from the API response
       setVideoTitle(title);
       setResolutions(resolutionsData);
-      setVideoDuration(duration); // Set the new duration state
+      setVideoDuration(duration);
 
-      await saveVideoDetailsToCache(tab.url, { title, resolutions: resolutionsData, duration });
+      // 5. Save complete data to cache
+      await saveVideoDetailsToCache(tab.url, { title, duration, resolutions: resolutionsData });
 
     } catch (error) {
-      console.error('Failed to fetch video details:', error);
+      console.error('Failed to fetch video details from API:', error);
     } finally {
       setIsLoadingVideo(false);
     }
