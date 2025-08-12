@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { ResolutionOption } from '../src/api/models';
@@ -29,7 +29,7 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
     resolver: zodResolver(createVideoDownloaderSchema(videoDuration)),
     mode: 'onChange',
     defaultValues: {
-      resolution: resolutions[0]?.formatId || '',
+      resolution: resolutions[3]?.formatId || '',
       startTime: '00:00:00',
       endTime: '00:00:05',
     },
@@ -47,11 +47,11 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
     <FormProvider {...methods}>
       <Box sx={{ padding: 2, paddingTop: 1 }}>
         <TableContainer sx={{ mb: 3 }}>
-          <Table>
+          <Table sx={{tableLayout: 'fixed'}}>
             <TableHead >
               <TableRow >
-                <TableCell sx={{paddingBlock:1}}>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                <TableCell sx={{paddingBlock: 1, width: '60%'}}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Title
                   </Typography>
                 </TableCell>
@@ -64,11 +64,16 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell sx={{paddingBlock:1}}><Typography variant="body2">
-                  {videoTitle}
-                </Typography></TableCell>
-                <TableCell sx={{paddingBlock:1}}><Typography variant="body2">
-                  {videoDuration}
+                <Tooltip title={videoTitle} placement="top">
+                  <TableCell sx={{ paddingBlock: 1 }}>
+                    <Typography variant="body2" noWrap>
+                      {videoTitle}
+                    </Typography>
+                  </TableCell>
+                </Tooltip>
+                <TableCell sx={{ paddingBlock: 1 }}>
+                  <Typography variant="body2" noWrap>
+                    {videoDuration}
                 </Typography></TableCell>
               </TableRow>
             </TableBody>
