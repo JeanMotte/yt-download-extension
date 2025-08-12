@@ -21,8 +21,9 @@ declare module '#imports' {
   export { Layout } from '../components/Layout';
   export { GreetUser } from '../components/User';
   export { VideoDownloader } from '../components/VideoDownloader';
+  export { VideoDownloaderForm } from '../components/VideoDownloaderForm';
   export { saveToken, getToken, removeToken } from '../utils/auth';
   export { saveVideoDetailsToCache, getVideoDetailsFromCache, clearVideoCache, VideoCacheData } from '../utils/cache';
   export { getApiConfig, baseUrl } from '../utils/config';
-  export { saveBlobAsFile } from '../utils/download';
+  export { saveBlobAsFile, durationRegex, timeToSeconds } from '../utils/download';
 }

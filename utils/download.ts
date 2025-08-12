@@ -26,3 +26,13 @@ export const saveBlobAsFile = async (blob: Blob, filename: string): Promise<void
     console.log(`Revoked blob URL: ${url}`);
   }
 };
+
+/**
+ * Handling download inputs
+ */
+export const durationRegex = /^\d{2}:\d{2}:\d{2}$/;
+
+export const timeToSeconds = (time: string): number => {
+  const [hours, minutes, seconds] = time.split(':').map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
+};

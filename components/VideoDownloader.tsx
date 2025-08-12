@@ -1,52 +1,80 @@
-import { Box, Button, CircularProgress } from '@mui/material';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import type { ResolutionOption } from '../src/api/models';
+import { VideoDownloaderFormData, videoDownloaderSchema } from '../src/schemas/schema';
+import { VideoDownloaderForm } from './VideoDownloaderForm';
 
 interface VideoDownloaderProps {
   videoTitle: string;
   resolutions: ResolutionOption[];
+  videoDuration: string;
   isDownloadingFull: boolean;
   isDownloadingSample: boolean;
-  onSubmit: (data: { resolution: string }) => void;
+  onDownloadFull: (data: { resolution: string }) => void;
+  onDownloadSample: (data: { resolution: string }) => void;
 }
 
 export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
   videoTitle,
   resolutions,
+  videoDuration,
   isDownloadingFull,
   isDownloadingSample,
-  onSubmit,
+  onDownloadFull,
+  onDownloadSample,
 }) => {
-  const { register, handleSubmit } = useForm<{ resolution: string }>();
+  const methods = useForm<VideoDownloaderFormData>({
+    resolver: zodResolver(videoDownloaderSchema),
+    mode: 'onChange',
+    defaultValues: {
+      resolution: resolutions[0]?.formatId || '',
+      startTime: '00:00:00',
+      endTime: '00:00:05',
+    },
+  });
+
+  const handleDownloadFull = (data: VideoDownloaderFormData) => {
+    onDownloadFull({ resolution: data.resolution });
+  };
+
+  const handleDownloadSample = (data: VideoDownloaderFormData) => {
+    onDownloadSample({ resolution: data.resolution });
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label>Video Title:</label>
-        <p>{videoTitle}</p>
-      </div>
-      <div>
-        <label htmlFor="resolution">Resolution</label>
-        <select id="resolution" {...register('resolution')}>
-          {resolutions.map((res) => (
-            <option key={res.formatId} value={res.formatId!}>
-              {res.resolution}
-            </option>
-          ))}
-        </select>
-      </div>
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 2 }}>
+    <FormProvider {...methods}>
+      <Box sx={{ p: 2 }}>
+        <TableContainer component={Paper} sx={{ mb: 3 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Resolution</TableCell>
+                <TableCell>Duration</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {resolutions.map((res) => (
+                <TableRow key={res.formatId}>
+                  <TableCell>{videoTitle}</TableCell>
+                  <TableCell>{res.resolution}</TableCell>
+                  <TableCell>{videoDuration}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      <Button type="submit" disabled={isDownloadingFull} sx={{ textTransform: 'none' }}
-      startIcon={isDownloadingFull ? undefined : <i className="ti ti-download" />}>
-        {isDownloadingFull ? <CircularProgress size={24} /> : 'Download Full'}
-      </Button>
-      <Button sx={{ textTransform: 'none'}} disabled={isDownloadingSample}
-      startIcon={isDownloadingSample ? undefined : <i className="ti ti-download" />}>
-        {isDownloadingSample ? <CircularProgress size={24} /> : 'Download Sample'}
-      </Button>
+        <VideoDownloaderForm
+          isDownloadingFull={isDownloadingFull}
+          isDownloadingSample={isDownloadingSample}
+          onDownloadFull={methods.handleSubmit(handleDownloadFull)}
+          onDownloadSample={methods.handleSubmit(onDownloadSample)}
+          resolutions={resolutions}
+        />
       </Box>
-    </form>
+    </FormProvider>
   );
 };

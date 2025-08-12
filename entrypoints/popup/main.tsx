@@ -5,6 +5,7 @@ import { Layout } from '../../components/Layout';
 import { VideoDownloader } from '../../components/VideoDownloader';
 import type { ResolutionOption, UserRead } from '../../src/api/models';
 import { AuthApi, VideoApi } from '../../src/api/services';
+import { VideoDownloaderFormData } from '../../src/schemas/schema';
 import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
 import { baseUrl, getApiConfig } from '../../utils/config';
@@ -13,13 +14,23 @@ import './style.css';
 
 type AuthStatus = 'pending' | 'authenticated' | 'unauthenticated';
 
+interface VideoDetailsCache {
+  title: string;
+  resolutions: ResolutionOption[];
+  duration: string; // Add duration to the cache
+}
+
 const App = () => {
   const [user, setUser] = useState<UserRead | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>('pending');
+  
+  // State for video details
   const [videoTitle, setVideoTitle] = useState('');
   const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
+  const [videoDuration, setVideoDuration] = useState('00:00:00');
 
+  // State for loading and downloading statuses
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
   const [isDownloadingFull, setIsDownloadingFull] = useState(false);
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
@@ -43,7 +54,7 @@ const App = () => {
     initializeApp();
   }, []);
 
-    const getVideoDetails = useCallback(async (token: string) => {
+  const getVideoDetails = useCallback(async (token: string) => {
     setIsLoadingVideo(true);
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
 
@@ -52,22 +63,21 @@ const App = () => {
       return;
     }
 
-    // 1. Check the cache first
     const cachedData = await getVideoDetailsFromCache(tab.url);
     if (cachedData) {
       setVideoTitle(cachedData.title);
       setResolutions(cachedData.resolutions);
-      setVideoUrl(cachedData.url);
+      setVideoDuration(cachedData.duration);
+      setVideoUrl(tab.url);
       setIsLoadingVideo(false);
       return;
     }
 
-    // 2. Fetch data if no cache
     try {
       setVideoUrl(tab.url);
       
-      // Fetch title and formats in parallel to speed it up
-      const [titleResponse, formatsResponse] = await Promise.all([
+      // Assume the content script now returns title and duration
+      const [detailsResponse, formatsResponse] = await Promise.all([
         browser.tabs.sendMessage(tab.id, { type: 'GET_VIDEO_DETAILS' }),
         (async () => {
           const config = await getApiConfig(token);
@@ -76,14 +86,14 @@ const App = () => {
         })(),
       ]);
 
-      const title = titleResponse.title;
+      const { title, duration } = detailsResponse; // Destructure duration
       const resolutionsData = formatsResponse.resolutions ?? [];
 
       setVideoTitle(title);
       setResolutions(resolutionsData);
-      
-      // 3. Save newly fetched data to cache
-      await saveVideoDetailsToCache(tab.url, { title, resolutions: resolutionsData });
+      setVideoDuration(duration); // Set the new duration state
+
+      await saveVideoDetailsToCache(tab.url, { title, resolutions: resolutionsData, duration });
 
     } catch (error) {
       console.error('Failed to fetch video details:', error);
@@ -92,21 +102,98 @@ const App = () => {
     }
   }, []);
 
-    useEffect(() => {
-  // We fetch details only when we have a confirmed user object
-  const fetchDetailsForUser = async () => {
-    if (user) {
-      // We need the token that authenticated this user.
-      const token = await getToken(); // It's safe to get it here now.
-      if (token) {
-        await getVideoDetails(token);
+  // useEffect to fetch details when user is authenticated (no changes here)
+  useEffect(() => {
+    const fetchDetailsForUser = async () => {
+      if (user) {
+        const token = await getToken();
+        if (token) {
+          await getVideoDetails(token);
+        }
       }
+    };
+    fetchDetailsForUser();
+  }, [user, getVideoDetails]);
+
+
+  // --- DOWNLOAD HANDLERS ---
+
+  /**
+   * Handles downloading the full video.
+   */
+  const handleDownloadFull = async (data: { resolution: string }) => {
+    if (isDownloadingFull) return;
+    setIsDownloadingFull(true);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("User not authenticated.");
+
+      const response = await fetch(`${baseUrl}/api/video/download`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          url: videoUrl,
+          format_id: data.resolution,
+        }),
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+
+      const videoBlob = await response.blob();
+      const safeFilename = `${videoTitle.replace(/[^a-z0-9_.-]/gi, '_')}.mp4`;
+      await saveBlobAsFile(videoBlob, safeFilename);
+
+    } catch (error) {
+      console.error('Full download error:', error);
+    } finally {
+      setIsDownloadingFull(false);
     }
   };
-  fetchDetailsForUser();
-}, [user, getVideoDetails]);
 
-  const handleLogin = async () => {
+  /**
+   * Handles downloading a sample (clipped) version of the video.
+   */
+  const handleDownloadSample = async (data: VideoDownloaderFormData) => {
+    if (isDownloadingSample) return;
+    setIsDownloadingSample(true);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("User not authenticated.");
+
+      const response = await fetch(`${baseUrl}/api/video/download/sample`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          url: videoUrl,
+          format_id: data.resolution,
+          start_time: data.startTime,
+          end_time: data.endTime,
+        }),
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+
+      const videoBlob = await response.blob();
+      const safeFilename = `${videoTitle.replace(/[^a-z0-9_.-]/gi, '_')}_sample.mp4`;
+      await saveBlobAsFile(videoBlob, safeFilename);
+
+    } catch (error) {
+      console.error('Sample download error:', error);
+    } finally {
+      setIsDownloadingSample(false);
+    }
+  };
+
+
+  // --- Auth functions and component rendering ---
+  
+const handleLogin = async () => {
     try {
       setAuthStatus('pending');
       const googleAuth = await browser.identity.getAuthToken({ interactive: true });
@@ -141,63 +228,11 @@ const App = () => {
     setUser(null);
     setAuthStatus('unauthenticated');
   };
-
-  const getMe = async (token: string): Promise<UserRead> => {
+   const getMe = async (token: string): Promise<UserRead> => {
     const config = await getApiConfig(token);
     const authApi = new AuthApi(config);
     return await authApi.meApiAuthMeGet();
   };
-
-const handleDownload = async (data: { resolution: string }) => {
-  if (isDownloadingFull) return;
-
-  setIsDownloadingFull(true);
-  try {
-    const token = await getToken();
-    if (!token) throw new Error("User not authenticated for download.");
-
-    const downloadUrl = `${baseUrl}/api/video/download`;
-
-    const requestBody = {
-      url: videoUrl,
-      format_id: data.resolution,
-    };
-
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    };
-
-    const response = await fetch(downloadUrl, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Download failed with status ${response.status}: ${errorText}`);
-    }
-
-    const videoBlob = await response.blob();
-    
-    console.log(`Correctly created Blob with size: ${videoBlob.size}`);
-
-    const safeFilename = videoTitle.replace(/[^a-z0-9_.-]/gi, '_').substring(0, 100) + '.mp4';
-    
-    await saveBlobAsFile(videoBlob, safeFilename);
-    
-    console.log('Download process completed successfully.');
-
-  } catch (error) {
-    console.error('An error occurred during download:', error);
-    if (error instanceof Error) {
-      alert(`Download failed: ${error.message}`);
-    }
-  } finally {
-    setIsDownloadingFull(false);
-  }
-};
 
   if (authStatus === 'pending') {
     return <div>Loading...</div>;
@@ -213,9 +248,11 @@ const handleDownload = async (data: { resolution: string }) => {
             <VideoDownloader
               videoTitle={videoTitle}
               resolutions={resolutions}
+              videoDuration={videoDuration} // Pass the new duration prop
               isDownloadingFull={isDownloadingFull}
               isDownloadingSample={isDownloadingSample}
-              onSubmit={handleDownload}
+              onDownloadFull={handleDownloadFull}
+              onDownloadSample={handleDownloadSample}
             />
           )}
         </Layout>

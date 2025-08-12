@@ -7,6 +7,7 @@ export interface VideoCacheData {
   title: string;
   resolutions: ResolutionOption[];
   url: string;
+  duration: string;
   timestamp: number;
 }
 
