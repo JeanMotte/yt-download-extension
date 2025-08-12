@@ -66,7 +66,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
           </Tooltip>
           <Button
             onClick={onDownloadSample}
-            sx={{ textTransform: 'none', width: '50%' }}
+            sx={{ textTransform: 'none', width: '50%', border: '1px solid' }}
             disabled={isDownloadingSample || !isValid}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
           >

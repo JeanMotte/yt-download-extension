@@ -3,7 +3,7 @@ import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { ResolutionOption } from '../src/api/models';
-import { VideoDownloaderFormData, videoDownloaderSchema } from '../src/schemas/schema';
+import { createVideoDownloaderSchema, type VideoDownloaderFormData } from '../src/schemas/schema';
 import { VideoDownloaderForm } from './VideoDownloaderForm';
 
 interface VideoDownloaderProps {
@@ -26,7 +26,7 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
   onDownloadSample,
 }) => {
   const methods = useForm<VideoDownloaderFormData>({
-    resolver: zodResolver(videoDownloaderSchema),
+    resolver: zodResolver(createVideoDownloaderSchema(videoDuration)),
     mode: 'onChange',
     defaultValues: {
       resolution: resolutions[0]?.formatId || '',
@@ -45,7 +45,7 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
 
   return (
     <FormProvider {...methods}>
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ padding: 2, paddingTop: 1 }}>
         <TableContainer component={Paper} sx={{ mb: 3 }}>
           <Table>
             <TableHead>
