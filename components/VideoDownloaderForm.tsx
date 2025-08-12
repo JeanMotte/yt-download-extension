@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ResolutionOption } from '../src/api/models';
@@ -50,23 +50,27 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 2 }}>
-          <Button
-            onClick={onDownloadFull}
-            disabled={isDownloadingFull}
-            sx={{ textTransform: 'none' }}
-            startIcon={isDownloadingFull ? null : <i className="ti ti-download" />}
-            variant="contained"
-          >
-            {isDownloadingFull ? <CircularProgress size={24} /> : 'Download Full'}
-          </Button>
+          <Tooltip title="Will be available for premium users only" placement="top">
+            <Box width="50%">
+              <Button
+                onClick={onDownloadFull}
+                // disabled={isDownloadingFull}
+                sx={{ textTransform: 'none', width: '100%' }}
+                startIcon={isDownloadingFull ? null : <i className="ti ti-download" />}
+              variant="contained"
+              disabled
+              >
+              {isDownloadingFull ? <CircularProgress size={24} /> : 'Full Video'}
+              </Button>
+            </Box>
+          </Tooltip>
           <Button
             onClick={onDownloadSample}
-            sx={{ textTransform: 'none' }}
+            sx={{ textTransform: 'none', width: '50%' }}
             disabled={isDownloadingSample || !isValid}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
-            variant="outlined"
           >
-            {isDownloadingSample ? <CircularProgress size={24} /> : 'Download Sample'}
+            {isDownloadingSample ? <CircularProgress size={24} /> : 'Sample'}
           </Button>
         </Box>
       </Box>

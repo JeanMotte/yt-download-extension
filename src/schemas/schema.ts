@@ -4,8 +4,8 @@ import { durationRegex, timeToSeconds } from "../../utils/download";
 export const videoDownloaderSchema = z
   .object({
     resolution: z.string().nonempty('Resolution is required.'),
-    startTime: z.string().regex(durationRegex, 'Invalid time format. Use xx:xx:xx'),
-    endTime: z.string().regex(durationRegex, 'Invalid time format. Use xx:xx:xx'),
+    startTime: z.string().regex(durationRegex, 'Use hh:mm:ss format'),
+    endTime: z.string().regex(durationRegex, 'Use hh:mm:ss format'),
   })
   .refine(
     (data) => {
