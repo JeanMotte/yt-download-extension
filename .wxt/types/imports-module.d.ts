@@ -23,6 +23,6 @@ declare module '#imports' {
   export { VideoDownloader } from '../components/VideoDownloader';
   export { saveToken, getToken, removeToken } from '../utils/auth';
   export { saveVideoDetailsToCache, getVideoDetailsFromCache, clearVideoCache, VideoCacheData } from '../utils/cache';
-  export { getApiConfig } from '../utils/config';
+  export { getApiConfig, baseUrl } from '../utils/config';
   export { saveBlobAsFile } from '../utils/download';
 }

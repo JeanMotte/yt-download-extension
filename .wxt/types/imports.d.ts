@@ -7,6 +7,7 @@ declare global {
   const Layout: typeof import('/app/workspace/components/Layout')['Layout']
   const MatchPattern: typeof import('wxt/utils/match-patterns')['MatchPattern']
   const VideoDownloader: typeof import('/app/workspace/components/VideoDownloader')['VideoDownloader']
+  const baseUrl: typeof import('/app/workspace/utils/config')['baseUrl']
   const browser: typeof import('wxt/browser')['browser']
   const clearVideoCache: typeof import('/app/workspace/utils/cache')['clearVideoCache']
   const createIframeUi: typeof import('wxt/utils/content-script-ui/iframe')['createIframeUi']
