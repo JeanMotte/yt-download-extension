@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { ResolutionOption } from '../src/api/models';
@@ -46,18 +46,30 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
   return (
     <FormProvider {...methods}>
       <Box sx={{ padding: 2, paddingTop: 1 }}>
-        <TableContainer component={Paper} sx={{ mb: 3 }}>
+        <TableContainer sx={{ mb: 3 }}>
           <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Duration</TableCell>
+            <TableHead >
+              <TableRow >
+                <TableCell sx={{paddingBlock:1}}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                    Title
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{paddingBlock:1}}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                    Duration
+                  </Typography>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>{videoTitle}</TableCell>
-                <TableCell>{videoDuration}</TableCell>
+                <TableCell sx={{paddingBlock:1}}><Typography variant="body2">
+                  {videoTitle}
+                </Typography></TableCell>
+                <TableCell sx={{paddingBlock:1}}><Typography variant="body2">
+                  {videoDuration}
+                </Typography></TableCell>
               </TableRow>
             </TableBody>
           </Table>
