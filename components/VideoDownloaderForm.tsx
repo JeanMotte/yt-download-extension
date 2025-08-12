@@ -49,7 +49,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
           <TimeInput name="endTime" label="End Time" />
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 1 }}>
           <Tooltip title="Will be available for premium users only" placement="top">
             <Box width="50%">
               <Button
