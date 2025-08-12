@@ -497,6 +497,10 @@
             ],
             "title": "Thumbnail Url"
           },
+          "duration": {
+            "type": "string",
+            "title": "Duration"
+          },
           "resolutions": {
             "items": {
               "$ref": "#/components/schemas/ResolutionOption"
@@ -515,6 +519,7 @@
         "type": "object",
         "required": [
           "title",
+          "duration",
           "resolutions",
           "audio_only"
         ],

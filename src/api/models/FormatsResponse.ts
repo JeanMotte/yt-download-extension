@@ -48,6 +48,12 @@ export interface FormatsResponse {
     thumbnailUrl?: string | null;
     /**
      * 
+     * @type {string}
+     * @memberof FormatsResponse
+     */
+    duration: string;
+    /**
+     * 
      * @type {Array<ResolutionOption>}
      * @memberof FormatsResponse
      */
@@ -65,6 +71,7 @@ export interface FormatsResponse {
  */
 export function instanceOfFormatsResponse(value: object): value is FormatsResponse {
     if (!('title' in value) || value['title'] === undefined) return false;
+    if (!('duration' in value) || value['duration'] === undefined) return false;
     if (!('resolutions' in value) || value['resolutions'] === undefined) return false;
     if (!('audioOnly' in value) || value['audioOnly'] === undefined) return false;
     return true;
@@ -82,6 +89,7 @@ export function FormatsResponseFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'title': json['title'],
         'thumbnailUrl': json['thumbnail_url'] == null ? undefined : json['thumbnail_url'],
+        'duration': json['duration'],
         'resolutions': ((json['resolutions'] as Array<any>).map(ResolutionOptionFromJSON)),
         'audioOnly': ((json['audio_only'] as Array<any>).map(AudioOptionFromJSON)),
     };
@@ -100,6 +108,7 @@ export function FormatsResponseToJSONTyped(value?: FormatsResponse | null, ignor
         
         'title': value['title'],
         'thumbnail_url': value['thumbnailUrl'],
+        'duration': value['duration'],
         'resolutions': ((value['resolutions'] as Array<any>).map(ResolutionOptionToJSON)),
         'audio_only': ((value['audioOnly'] as Array<any>).map(AudioOptionToJSON)),
     };
