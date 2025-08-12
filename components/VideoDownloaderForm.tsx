@@ -1,7 +1,8 @@
-import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ResolutionOption } from '../src/api/models';
+import { TimeInput } from './TimeInput';
 
 interface VideoDownloaderFormProps {
   resolutions: ResolutionOption[];
@@ -44,32 +45,8 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
         </FormControl>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Controller
-            name="startTime"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Start"
-                error={!!errors.startTime}
-                helperText={errors.startTime?.message as string}
-                fullWidth
-              />
-            )}
-          />
-          <Controller
-            name="endTime"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="End"
-                error={!!errors.endTime}
-                helperText={errors.endTime?.message as string}
-                fullWidth
-              />
-            )}
-          />
+          <TimeInput name="startTime" label="Start Time" />
+          <TimeInput name="endTime" label="End Time" />
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 2 }}>

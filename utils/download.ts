@@ -36,3 +36,14 @@ export const timeToSeconds = (time: string): number => {
   const [hours, minutes, seconds] = time.split(':').map(Number);
   return hours * 3600 + minutes * 60 + seconds;
 };
+
+export const secondsToTime = (totalSeconds: number): string => {
+  const positiveSeconds = Math.max(0, totalSeconds);
+  const hours = Math.floor(positiveSeconds / 3600);
+  const minutes = Math.floor((positiveSeconds % 3600) / 60);
+  const seconds = positiveSeconds % 60;
+
+  const pad = (num: number) => num.toString().padStart(2, '0');
+
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+};
