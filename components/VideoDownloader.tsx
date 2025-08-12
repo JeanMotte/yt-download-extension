@@ -51,18 +51,14 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
             <TableHead>
               <TableRow>
                 <TableCell>Title</TableCell>
-                <TableCell>Resolution</TableCell>
                 <TableCell>Duration</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {resolutions.map((res) => (
-                <TableRow key={res.formatId}>
-                  <TableCell>{videoTitle}</TableCell>
-                  <TableCell>{res.resolution}</TableCell>
-                  <TableCell>{videoDuration}</TableCell>
-                </TableRow>
-              ))}
+              <TableRow>
+                <TableCell>{videoTitle}</TableCell>
+                <TableCell>{videoDuration}</TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
