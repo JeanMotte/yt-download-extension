@@ -29,7 +29,7 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
     resolver: zodResolver(createVideoDownloaderSchema(videoDuration)),
     mode: 'onChange',
     defaultValues: {
-      resolution: resolutions[3]?.formatId || '',
+      resolution: resolutions[0]?.formatId || '',
       startTime: '00:00:00',
       endTime: '00:00:05',
     },

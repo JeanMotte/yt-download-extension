@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
+import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ResolutionOption } from '../src/api/models';
@@ -50,7 +50,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 1 }}>
-          <Tooltip title="Will be available for premium users only" placement="top">
+          {/* <Tooltip title="Will be available for premium users only" placement="top">
             <Box width="50%">
               <Button
                 onClick={onDownloadFull}
@@ -63,14 +63,14 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
               {isDownloadingFull ? <CircularProgress size={24} /> : 'Full Video'}
               </Button>
             </Box>
-          </Tooltip>
+          </Tooltip> */}
           <Button
             onClick={onDownloadSample}
-            sx={{ textTransform: 'none', width: '50%', border: '1px solid' }}
+            sx={{ textTransform: 'none', width: '100%', border: '1px solid' }}
             disabled={isDownloadingSample || !isValid}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
           >
-            {isDownloadingSample ? <CircularProgress size={24} /> : 'Sample'}
+            {isDownloadingSample ? <CircularProgress size={24} /> : 'Download Sample'}
           </Button>
         </Box>
       </Box>
