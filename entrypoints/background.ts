@@ -4,7 +4,7 @@ import { browser } from 'wxt/browser';
 import { clearVideoCache } from '../utils/cache';
 
 const YOUTUBE_VIDEO_PAGE_REGEX =
-  /^https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+  /^https?:\/\/(www\.)?youtube\.com\/(?:watch\?v=|shorts\/)([a-zA-Z0-9_-]{11})/;
 
 /**
  * Track the last known video URL for each tab
