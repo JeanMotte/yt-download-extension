@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { browser } from 'wxt/browser';
@@ -234,7 +234,14 @@ const handleLogin = async () => {
   };
 
   if (authStatus === 'pending') {
-    return <CircularProgress style={{ display: 'block', margin: 'auto', marginTop: '50px' }} />;
+    return (
+      <Box>
+        <CircularProgress style={{ display: 'block', margin: 'auto', marginTop: '50px' }} />
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ marginTop: 2 }}>
+          Logging...
+        </Typography>
+      </Box>
+    );
   }
 
   return (
@@ -242,7 +249,12 @@ const handleLogin = async () => {
       {authStatus === 'authenticated' && user ? (
         <Layout onLogout={handleLogout}>
           {isLoadingVideo ? (
+            <Box>
               <CircularProgress style={{ display: 'block', margin: 'auto', marginTop: '50px' }} />
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ marginTop: 2 }}>
+                Loading video details...
+              </Typography>
+            </Box>
 
           ) : (
             <VideoDownloader
