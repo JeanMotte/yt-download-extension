@@ -10,8 +10,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingInline: '16px', paddingTop: '8px' }}>
-        <p><strong>YouLoad</strong></p>
-        <IconButton onClick={onLogout} color="inherit" size='small'>
+        <img src="/youload-logo.svg" alt="YouLoad logo" style={{ height: '30px' }} />
+        <IconButton onClick={onLogout} size='small' aria-label='Logout'>
           <i className="ti ti-power" />
         </IconButton>
       </header>

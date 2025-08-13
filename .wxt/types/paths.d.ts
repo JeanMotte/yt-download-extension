@@ -9,6 +9,7 @@ declare module "wxt/browser" {
     | "/content-scripts/content.js"
     | "/google-logo.svg"
     | "/popup.html"
+    | "/youload-logo.svg"
   type HtmlPublicPath = Extract<PublicPath, `${string}.html`>
   export interface WxtRuntime {
     getURL(path: PublicPath): string;

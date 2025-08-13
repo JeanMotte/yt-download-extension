@@ -1,3 +1,4 @@
+import { Box, Button, CircularProgress } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { browser } from 'wxt/browser';
@@ -233,7 +234,7 @@ const handleLogin = async () => {
   };
 
   if (authStatus === 'pending') {
-    return <div>Loading...</div>;
+    return <CircularProgress style={{ display: 'block', margin: 'auto', marginTop: '50px' }} />;
   }
 
   return (
@@ -241,7 +242,8 @@ const handleLogin = async () => {
       {authStatus === 'authenticated' && user ? (
         <Layout onLogout={handleLogout}>
           {isLoadingVideo ? (
-            <div>Loading video details...</div>
+              <CircularProgress style={{ display: 'block', margin: 'auto', marginTop: '50px' }} />
+
           ) : (
             <VideoDownloader
               videoTitle={videoTitle}
@@ -255,13 +257,25 @@ const handleLogin = async () => {
           )}
         </Layout>
       ) : (
-        <div>
-          <h1>YouLoad</h1>
-          <button onClick={handleLogin} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/google-logo.svg" alt="Google logo" style={{ marginRight: '10px', height: '20px' }} />
-            Login with Google
-          </button>
-        </div>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          marginTop: '50px'
+        }}>
+          <div style={{ marginBottom: '4px' }}>
+            <img src="/youload-logo.svg" alt="YouLoad logo" style={{ height: '100px' }} />
+            <h1 style={{ fontSize: "1.5rem", fontStyle: 'italic', marginTop: 0, marginBottom: 8 }}>YouLoad</h1>
+          </div>
+          <div>
+            <Button onClick={handleLogin} variant="outlined" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50px', textTransform: 'none' }}>
+              <img src="/google-logo.svg" alt="Google logo" style={{ marginRight: '10px', height: '20px' }} />
+              Login With Google
+            </Button>
+          </div>
+        </Box>
       )}
     </div>
   );
