@@ -10,7 +10,6 @@ declare module "wxt/browser" {
     | "/google-logo.svg"
     | "/icon-16.png"
     | "/icon-32.png"
-    | "/popup.html"
     | "/youload-logo.svg"
   type HtmlPublicPath = Extract<PublicPath, `${string}.html`>
   export interface WxtRuntime {

@@ -11,6 +11,7 @@ import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
 import { baseUrl, getApiConfig } from '../../utils/config';
 import { saveBlobAsFile } from '../../utils/download';
+import { YOUTUBE_VIDEO_PAGE_REGEX } from '../background';
 import './style.css';
 
 type AuthStatus = 'pending' | 'authenticated' | 'unauthenticated';
@@ -30,6 +31,7 @@ const App = () => {
   const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
   const [videoDuration, setVideoDuration] = useState('00:00:00');
+  const [isValidPage, setIsValidPage] = useState(true);
 
   // State for loading and downloading statuses
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
@@ -55,7 +57,7 @@ const App = () => {
     initializeApp();
   }, []);
 
-  const getVideoDetails = useCallback(async (token: string) => {
+  const getVideoDetails = useCallback(async (url: string, token: string) => {
     setIsLoadingVideo(true);
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
 
@@ -113,6 +115,52 @@ const App = () => {
     };
     fetchDetailsForUser();
   }, [user, getVideoDetails]);
+
+  useEffect(() => {
+    if (authStatus !== 'authenticated' || !user) return;
+
+    const tokenPromise = getToken();
+
+    const handleTabUpdate = async (tab: browser.Tabs.Tab | undefined) => {
+        if (!tab?.url || !YOUTUBE_VIDEO_PAGE_REGEX.test(tab.url)) {
+            setIsValidPage(false);
+            setIsLoadingVideo(false);
+            return;
+        }
+
+        // Avoid refetching if the URL hasn't changed
+        if (tab.url === videoUrl) return;
+
+        const token = await tokenPromise;
+        if (token && tab.url) {
+            getVideoDetails(tab.url, token);
+        }
+    };
+    
+    // Initial load for the active tab when component mounts/user authenticates
+    browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => handleTabUpdate(tab));
+
+    // Listener for when user switches to a different tab
+    const onTabActivated = (activeInfo: browser.Tabs.OnActivatedActiveInfoType) => {
+        browser.tabs.get(activeInfo.tabId).then(handleTabUpdate);
+    };
+
+    // Listener for when a tab's URL changes
+    const onTabUpdated = (tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, tab: browser.Tabs.Tab) => {
+        if (tab.active && changeInfo.url) {
+            handleTabUpdate(tab);
+        }
+    };
+
+    browser.tabs.onActivated.addListener(onTabActivated);
+    browser.tabs.onUpdated.addListener(onTabUpdated);
+
+    // Cleanup listeners when the component unmounts
+    return () => {
+        browser.tabs.onActivated.removeListener(onTabActivated);
+        browser.tabs.onUpdated.removeListener(onTabUpdated);
+    };
+  }, [authStatus, user, getVideoDetails, videoUrl]);
 
 
   // --- DOWNLOAD HANDLERS ---
