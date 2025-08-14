@@ -23,9 +23,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": { }
               }
             }
           }
@@ -118,7 +116,7 @@
         },
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ]
       }
@@ -165,7 +163,7 @@
         },
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ]
       }
@@ -176,7 +174,7 @@
           "Video"
         ],
         "summary": "Download Full Video",
-        "description": "Download a video and returns it as a file attachment.",
+        "description": "Download a short video and returns it as a file attachment.",
         "operationId": "download_full_video_api_video_download_post",
         "requestBody": {
           "content": {
@@ -193,9 +191,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": { }
               }
             }
           },
@@ -212,7 +208,7 @@
         },
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ]
       }
@@ -240,9 +236,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": { }
               }
             }
           },
@@ -259,7 +253,7 @@
         },
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ]
       }
@@ -290,7 +284,7 @@
         },
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ]
       },
@@ -306,16 +300,14 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": { }
               }
             }
           }
         },
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ]
       }
@@ -330,7 +322,7 @@
         "operationId": "delete_user_history_entry_api_history__history_id__delete",
         "security": [
           {
-            "HTTPBearer": []
+            "HTTPBearer": [ ]
           }
         ],
         "parameters": [
@@ -375,9 +367,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": { }
               }
             }
           }
