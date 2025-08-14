@@ -62,7 +62,6 @@ const App = () => {
   useEffect(() => {
     if (videoUrl) {
       setIsShortUrl(YOUTUBE_SHORTS_REGEX.test(videoUrl));
-      console.log('Is Short URL:', isShortUrl);
     }
   }, [videoUrl]);
 

@@ -7,7 +7,6 @@ import { browser } from 'wxt/browser';
 export const saveBlobAsFile = async (blob: Blob, filename: string): Promise<void> => {
   // Create a short-lived, efficient pointer to the blob in memory.
   const url = URL.createObjectURL(blob);
-  console.log(`Created blob URL: ${url} for blob of size ${blob.size}`);
 
   try {
     // Pass this temporary URL to the downloads API.
@@ -16,14 +15,12 @@ export const saveBlobAsFile = async (blob: Blob, filename: string): Promise<void
       filename: filename,
       saveAs: true, // This requests the "Save As" dialog.
     });
-    console.log('browser.downloads.download call initiated successfully.');
 
   } catch (error) {
     console.error('Download failed:', error);
     // This error will now properly appear in the background script's console if there's an issue.
   } finally {
     URL.revokeObjectURL(url);
-    console.log(`Revoked blob URL: ${url}`);
   }
 };
 
