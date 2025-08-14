@@ -33,6 +33,9 @@ const updateSidePanelState = async (tabId: number, url: string | undefined) => {
     if (isVideoPage) {
       await browser.action.enable(tabId);
     } else {
+      await browser.sidePanel.setOptions({
+        enabled: false,
+      });
       await browser.action.disable(tabId);
     }
   } catch (error) {
