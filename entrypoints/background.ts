@@ -25,12 +25,10 @@ const updateSidePanelState = async (tabId: number, url: string | undefined) => {
   try {
     await browser.sidePanel.setOptions({
       tabId,
-      path: 'sidepanel.html',
+      path: 'sidepanel.html', // Not index.html, as WXT generates sidepanel.html
       enabled: isVideoPage,
     });
 
-    // --- LOGGING ---
-    console.log(`[Side Panel] Options set for tab ${tabId}. Enabled: ${isVideoPage}`);
 
     if (isVideoPage) {
       await browser.action.enable(tabId);
@@ -38,7 +36,6 @@ const updateSidePanelState = async (tabId: number, url: string | undefined) => {
       await browser.action.disable(tabId);
     }
   } catch (error) {
-    // --- LOGGING ---
     console.error(`[Side Panel] Error setting options for tab ${tabId}:`, error);
   }
 };

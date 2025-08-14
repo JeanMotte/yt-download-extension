@@ -69,7 +69,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
             disabled={isDownloadingSample || !isValid}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
           >
-            {isDownloadingSample ? <CircularProgress size={24} /> : 'Download Sample'}
+            {isDownloadingSample ? <CircularProgress size={24} /> : isShortUrl ? 'Sample' : 'Download Sample'}
           </Button>
         </Box>
       </Box>
