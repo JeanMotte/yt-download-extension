@@ -5,7 +5,7 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: () => ({
     name: 'YouLoad',
-    permissions: ['identity', 'tabs', 'storage', 'downloads'],
+    permissions: ['identity', 'tabs', 'storage', 'downloads', 'sidePanel'],
     oauth2: {
       client_id: import.meta.env.WXT_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_OAUTH_CLIENT_ID',
       scopes: ['openid', 'email', 'profile'],
@@ -14,6 +14,9 @@ export default defineConfig({
       gecko: {
         id: 'youload@wxt.dev',
       },
+    },
+    action: {
+      default_title: 'YouLoad',
     },
     host_permissions: [
       "http://localhost:8000/*",
