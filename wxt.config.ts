@@ -15,6 +15,12 @@ export default defineConfig({
         id: 'youload@wxt.dev',
       },
     },
+    content_scripts: [
+      {
+        matches: ['*://*.youtube.com/watch?v=*'],
+        js: ['content-scripts/content.js'],
+      },
+    ],
     action: {
       default_title: 'YouLoad',
     },
@@ -22,4 +28,5 @@ export default defineConfig({
       "http://localhost:8000/*",
     ]
   }),
+  
 });

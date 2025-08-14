@@ -6,9 +6,11 @@ import { secondsToTime, timeToSeconds } from '../utils/download';
 interface TimeInputProps {
   name: 'startTime' | 'endTime';
   label: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
-export const TimeInput: React.FC<TimeInputProps> = ({ name, label }) => {
+export const TimeInput: React.FC<TimeInputProps> = ({ name, label, onFocus, onBlur }) => {
   const {
     control,
     setValue,
@@ -50,6 +52,8 @@ export const TimeInput: React.FC<TimeInputProps> = ({ name, label }) => {
           label={label}
           onKeyDown={(e) => handleKeyDown(e, field.value)}
           error={!!errors[name]}
+          onFocus={onFocus}
+          onBlur={onBlur}
           helperText={errors[name]?.message as string}
           fullWidth
           inputProps={{

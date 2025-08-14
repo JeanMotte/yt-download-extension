@@ -1,6 +1,7 @@
 import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { browser } from 'wxt/browser';
 import { ResolutionOption } from '../src/api/models';
 import { TimeInput } from './TimeInput';
 
@@ -23,8 +24,32 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
 }) => {
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors, isValid }, setValue
   } = useFormContext();
+
+    const [activeTimeInput, setActiveTimeInput] = useState<'startTime' | 'endTime' | null>(null);
+
+  // 2. The message listener is also now inside the component that needs it.
+  useEffect(() => {
+    const handleMessage = (message: any) => {
+      if (!activeTimeInput || message.type !== 'VIDEO_TIME_UPDATE') {
+        return;
+      }
+
+      setValue(activeTimeInput, message.payload.time, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    };
+
+    browser.runtime.onMessage.addListener(handleMessage);
+
+    // Cleanup the listener when the component unmounts
+    return () => {
+      browser.runtime.onMessage.removeListener(handleMessage);
+    };
+    // Re-subscribe if the focused input or setValue function changes
+  }, [activeTimeInput, setValue]);
 
   return (
     <form>
@@ -47,8 +72,18 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
         </FormControl>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <TimeInput name="startTime" label="Start Time" />
-          <TimeInput name="endTime" label="End Time" />
+          <TimeInput
+              name="startTime"
+              label="Start Time"
+              onFocus={() => setActiveTimeInput('startTime')}
+              onBlur={() => setActiveTimeInput(null)}
+            />
+            <TimeInput
+              name="endTime"
+              label="End Time"
+              onFocus={() => setActiveTimeInput('endTime')}
+              onBlur={() => setActiveTimeInput(null)}
+            />
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 1 }}>
