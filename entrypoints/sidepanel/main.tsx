@@ -38,6 +38,7 @@ const App = () => {
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
   const [isDownloadingFull, setIsDownloadingFull] = useState(false);
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
+  const [isDownloadingAny, setIsDownloadingAny] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -173,14 +174,13 @@ const App = () => {
   }, [authStatus, user, getVideoDetails, videoUrl]);
 
 
-  // --- DOWNLOAD HANDLERS ---
-
   /**
    * Handles downloading the full video.
    */
   const handleDownloadFull = async (data: { resolution: string }) => {
     if (isDownloadingFull) return;
     setIsDownloadingFull(true);
+    setIsDownloadingAny(true);
     try {
       const token = await getToken();
       if (!token) throw new Error("User not authenticated.");
@@ -207,6 +207,7 @@ const App = () => {
       console.error('Full download error:', error);
     } finally {
       setIsDownloadingFull(false);
+      setIsDownloadingAny(false);
     }
   };
 
@@ -216,6 +217,7 @@ const App = () => {
   const handleDownloadSample = async (data: VideoDownloaderFormData) => {
     if (isDownloadingSample) return;
     setIsDownloadingSample(true);
+    setIsDownloadingAny(true);
     try {
       const token = await getToken();
       if (!token) throw new Error("User not authenticated.");
@@ -244,6 +246,7 @@ const App = () => {
       console.error('Sample download error:', error);
     } finally {
       setIsDownloadingSample(false);
+      setIsDownloadingAny(false);
     }
   };
 
@@ -321,6 +324,7 @@ const handleLogin = async () => {
               videoDuration={videoDuration} // Pass the new duration prop
               isDownloadingFull={isDownloadingFull}
               isDownloadingSample={isDownloadingSample}
+              isDownloadingAny={isDownloadingAny}
               isShortUrl={isShortUrl}
               onDownloadFull={handleDownloadFull}
               onDownloadSample={handleDownloadSample}

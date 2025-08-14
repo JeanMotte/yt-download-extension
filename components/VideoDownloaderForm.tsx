@@ -9,6 +9,7 @@ interface VideoDownloaderFormProps {
   isDownloadingFull: boolean;
   isDownloadingSample: boolean;
   isShortUrl: boolean;
+  isDownloadingAny: boolean;
   onDownloadFull: () => void;
   onDownloadSample: () => void;
 }
@@ -18,6 +19,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
   isDownloadingFull,
   isDownloadingSample,
   isShortUrl,
+  isDownloadingAny,
   onDownloadFull,
   onDownloadSample,
 }) => {
@@ -55,7 +57,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
             {isShortUrl && <Box width="50%">
               <Button
                 onClick={onDownloadFull}
-                disabled={isDownloadingFull || !isShortUrl}
+                disabled={isDownloadingFull || !isShortUrl || isDownloadingAny}
                 sx={{ textTransform: 'none', width: '100%' }}
                 startIcon={isDownloadingFull ? null : <i className="ti ti-download" />}
               variant="contained"
@@ -66,7 +68,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
           <Button
             onClick={onDownloadSample}
             sx={{ textTransform: 'none', width: isShortUrl ? '50%' : '100%', border: '1px solid' }}
-            disabled={isDownloadingSample || !isValid}
+            disabled={isDownloadingSample || !isValid || isDownloadingAny}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
           >
             {isDownloadingSample ? <CircularProgress size={24} /> : isShortUrl ? 'Sample' : 'Download Sample'}

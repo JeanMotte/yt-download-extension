@@ -13,6 +13,7 @@ interface VideoDownloaderProps {
   isDownloadingFull: boolean;
   isDownloadingSample: boolean;
   isShortUrl: boolean;
+  isDownloadingAny: boolean;
   onDownloadFull: (data: { resolution: string }) => void;
   onDownloadSample: (data: { resolution: string }) => void;
 }
@@ -24,6 +25,7 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
   isDownloadingFull,
   isDownloadingSample,
   isShortUrl,
+  isDownloadingAny,
   onDownloadFull,
   onDownloadSample,
 }) => {
@@ -89,6 +91,7 @@ export const VideoDownloader: React.FC<VideoDownloaderProps> = ({
           onDownloadSample={methods.handleSubmit(onDownloadSample)}
           resolutions={resolutions}
           isShortUrl={isShortUrl}
+          isDownloadingAny={isDownloadingAny}
         />
       </Box>
     </FormProvider>
