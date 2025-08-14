@@ -8,6 +8,7 @@ interface VideoDownloaderFormProps {
   resolutions: ResolutionOption[];
   isDownloadingFull: boolean;
   isDownloadingSample: boolean;
+  isShortUrl: boolean;
   onDownloadFull: () => void;
   onDownloadSample: () => void;
 }
@@ -16,6 +17,7 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
   resolutions,
   isDownloadingFull,
   isDownloadingSample,
+  isShortUrl,
   onDownloadFull,
   onDownloadSample,
 }) => {
@@ -50,27 +52,24 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 1 }}>
-          {/* <Tooltip title="Will be available for premium users only" placement="top">
-            <Box width="50%">
+            {isShortUrl && <Box width="50%">
               <Button
                 onClick={onDownloadFull}
-                // disabled={isDownloadingFull}
+                disabled={isDownloadingFull || !isShortUrl}
                 sx={{ textTransform: 'none', width: '100%' }}
                 startIcon={isDownloadingFull ? null : <i className="ti ti-download" />}
               variant="contained"
-              disabled
               >
-              {isDownloadingFull ? <CircularProgress size={24} /> : 'Full Video'}
+              {isDownloadingFull ? <CircularProgress size={24} /> : 'Full Short'}
               </Button>
-            </Box>
-          </Tooltip> */}
+            </Box>}
           <Button
             onClick={onDownloadSample}
-            sx={{ textTransform: 'none', width: '100%', border: '1px solid' }}
+            sx={{ textTransform: 'none', width: isShortUrl ? '50%' : '100%', border: '1px solid' }}
             disabled={isDownloadingSample || !isValid}
             startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
           >
-            {isDownloadingSample ? <CircularProgress size={24} /> : 'Download Sample'}
+            {isDownloadingSample ? <CircularProgress size={24} /> : isShortUrl ? 'Sample' : 'Download Sample'}
           </Button>
         </Box>
       </Box>
