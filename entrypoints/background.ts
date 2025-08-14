@@ -3,10 +3,16 @@
 import { browser } from 'wxt/browser';
 import { clearVideoCache } from '../utils/cache';
 
-
 export const YOUTUBE_VIDEO_PAGE_REGEX =
   /^https?:\/\/(www\.)?youtube\.com\/(?:watch\?v=|shorts\/)([a-zA-Z0-9_-]{11})/;
 
+export const YOUTUBE_SHORTS_REGEX =
+  /^https?:\/\/(www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/;
+
+/**
+ * Track the last known video URL for each tab
+ * { tabId: "https://youtube.com/watch?v=..." }
+ */
 const tabVideoUrlMap = new Map<number, string>();
 
 

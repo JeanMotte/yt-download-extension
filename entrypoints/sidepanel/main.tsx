@@ -11,7 +11,7 @@ import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
 import { baseUrl, getApiConfig } from '../../utils/config';
 import { saveBlobAsFile } from '../../utils/download';
-import { YOUTUBE_VIDEO_PAGE_REGEX } from '../background';
+import { YOUTUBE_SHORTS_REGEX, YOUTUBE_VIDEO_PAGE_REGEX } from '../background';
 import './style.css';
 
 type AuthStatus = 'pending' | 'authenticated' | 'unauthenticated';
@@ -31,6 +31,7 @@ const App = () => {
   const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
   const [videoDuration, setVideoDuration] = useState('00:00:00');
+  const [isShortUrl, setIsShortUrl] = useState(false);
   const [isValidPage, setIsValidPage] = useState(true);
 
   // State for loading and downloading statuses
@@ -57,6 +58,13 @@ const App = () => {
     initializeApp();
   }, []);
 
+  useEffect(() => {
+    if (videoUrl) {
+      setIsShortUrl(YOUTUBE_SHORTS_REGEX.test(videoUrl));
+      console.log('Is Short URL:', isShortUrl);
+    }
+  }, [videoUrl]);
+
   const getVideoDetails = useCallback(async (url: string, token: string) => {
     setIsLoadingVideo(true);
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
@@ -65,6 +73,8 @@ const App = () => {
       setIsLoadingVideo(false);
       return;
     }
+
+    // Determine if its a short or not to display download button accordingly
 
     const cachedData = await getVideoDetailsFromCache(tab.url);
     if (cachedData) {
@@ -311,6 +321,7 @@ const handleLogin = async () => {
               videoDuration={videoDuration} // Pass the new duration prop
               isDownloadingFull={isDownloadingFull}
               isDownloadingSample={isDownloadingSample}
+              isShortUrl={isShortUrl}
               onDownloadFull={handleDownloadFull}
               onDownloadSample={handleDownloadSample}
             />
