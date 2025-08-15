@@ -22,3 +22,9 @@
 <img src="public/youload-login.png" alt="Login Page" width="400">
 <img src="public/youload-readme-video.png" alt="Download Sample" width="400">
 <img src="public/youload-readme-short.png" alt="Download Short" width="400">
+
+## Useful commands
+
+- pnpm dev
+- npx wxt build
+- npx wxt zip
