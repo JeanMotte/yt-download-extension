@@ -26,10 +26,10 @@ export const createVideoDownloaderSchema = (videoDuration: string) => {
       (data) => {
         const startTimeInSeconds = timeToSeconds(data.startTime);
         const endTimeInSeconds = timeToSeconds(data.endTime);
-        return endTimeInSeconds - startTimeInSeconds <= 120;
+        return endTimeInSeconds - startTimeInSeconds <= 180;
       },
       {
-        message: 'Must be ≤ 2 min',
+        message: 'Must be ≤ 3 min',
         path: ['endTime'],
       }
     )

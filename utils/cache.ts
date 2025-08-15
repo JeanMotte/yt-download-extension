@@ -44,7 +44,6 @@ export const getVideoDetailsFromCache = async (url: string): Promise<VideoCacheD
 
   // Optional: Invalidate cache after a certain time
   if (Date.now() - cacheEntry.timestamp > ONE_HOUR) {
-    console.log('Cache is stale, removing.');
     await browser.storage.local.remove(cacheKey);
     return null;
   }
@@ -58,5 +57,4 @@ export const getVideoDetailsFromCache = async (url: string): Promise<VideoCacheD
 export const clearVideoCache = async (url: string): Promise<void> => {
     const cacheKey = `${CACHE_KEY_PREFIX}${url}`;
     await browser.storage.local.remove(cacheKey);
-    console.log(`Cache cleared for URL: ${url}`);
 };

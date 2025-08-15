@@ -19,9 +19,6 @@ const tabVideoUrlMap = new Map<number, string>();
 const updateSidePanelState = async (tabId: number, url: string | undefined) => {
   const isVideoPage = !!url && YOUTUBE_VIDEO_PAGE_REGEX.test(url);
   
-  // --- LOGGING ---
-  console.log(`[Side Panel] Tab: ${tabId}, URL: ${url}, Is YouTube Video: ${isVideoPage}`);
-
   try {
     await browser.sidePanel.setOptions({
       tabId,
@@ -44,8 +41,6 @@ const updateSidePanelState = async (tabId: number, url: string | undefined) => {
 };
 
 export default defineBackground(() => {
-  console.log('[Side Panel] Background script loaded.');
-
   browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(error => {
     console.error('[Side Panel] Error setting panel behavior:', error);
   });
@@ -86,7 +81,6 @@ export default defineBackground(() => {
     if (closedTabUrl) {
       await clearVideoCache(closedTabUrl);
       tabVideoUrlMap.delete(tabId);
-      console.log(`Cleaned up cache for closed tab ${tabId}.`);
     }
   });
 });
