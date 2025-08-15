@@ -25,6 +25,7 @@ declare module '#imports' {
   export { VideoDownloaderForm } from '../components/VideoDownloaderForm';
   export { saveToken, getToken, removeToken } from '../utils/auth';
   export { saveVideoDetailsToCache, getVideoDetailsFromCache, clearVideoCache, VideoCacheData } from '../utils/cache';
-  export { getApiConfig, baseUrl } from '../utils/config';
+  export { getAuthenticatedHeaders, getApiConfig, baseUrl } from '../utils/config';
+  export { getYoutubeCookiesForYtdlp } from '../utils/cookies';
   export { saveBlobAsFile, durationRegex, timeToSeconds, secondsToTime } from '../utils/download';
 }

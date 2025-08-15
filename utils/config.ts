@@ -1,14 +1,35 @@
-import { Configuration, ConfigurationParameters } from "../src/api/runtime";
+import { Configuration, ConfigurationParameters, HTTPHeaders } from "../src/api/runtime";
 import { getToken } from "./auth";
+import { getYoutubeCookiesForYtdlp } from "./cookies";
 
-export const getApiConfig = async (tokenOverride?: string): Promise<Configuration> => {
-  // Use the provided token if it exists, otherwise try to get it from storage.
-  const appToken = tokenOverride ?? await getToken();
+export const getAuthenticatedHeaders = async (tokenOverride?: string): Promise<HTTPHeaders> => {
+  const token = tokenOverride ?? await getToken(); // Use override if provided
+  if (!token) {
+    throw new Error("Authentication token not found.");
+  }
 
+  // Get and Base64-encode the user's YouTube cookies.
+  const youtubeCookies = await getYoutubeCookiesForYtdlp();
+  const encodedCookies = btoa(youtubeCookies);
+
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    // This is the custom header your FastAPI backend expects.
+    'X-Youtube-Cookies': encodedCookies,
+  };
+};
+
+export const getApiConfig = async (isAuthenticated: boolean = true, tokenOverride?: string): Promise<Configuration> => {
   const configParams: ConfigurationParameters = {
     basePath: import.meta.env.WXT_API_BASE_URL || 'http://localhost:8000',
-    accessToken: appToken || undefined,
   };
+
+  if (isAuthenticated) {
+    // Pass the tokenOverride to the headers function
+    configParams.headers = await getAuthenticatedHeaders(tokenOverride);
+  }
+  
   return new Configuration(configParams);
 };
 
