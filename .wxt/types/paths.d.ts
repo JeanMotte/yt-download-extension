@@ -11,7 +11,10 @@ declare module "wxt/browser" {
     | "/icon-16.png"
     | "/icon-32.png"
     | "/sidepanel.html"
+    | "/youload-login.png"
     | "/youload-logo.svg"
+    | "/youload-readme-short.png"
+    | "/youload-readme-video.png"
   type HtmlPublicPath = Extract<PublicPath, `${string}.html`>
   export interface WxtRuntime {
     getURL(path: PublicPath): string;
