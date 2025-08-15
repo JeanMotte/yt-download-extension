@@ -19,6 +19,6 @@
 
 ## Previews
 
-![Login View](public/youload-login.png)
-![Login View](public/youload-readme-video.png)
-![Login View](public/youload-readme-short.png)
+<img src="public/youload-login.png" alt="Login Page" width="400">
+<img src="public/youload-readme-video.png" alt="Download Sample" width="400">
+<img src="public/youload-readme-short.png" alt="Download Short" width="400">
