@@ -9,7 +9,7 @@ import { AuthApi, VideoApi } from '../../src/api/services';
 import { VideoDownloaderFormData } from '../../src/schemas/schema';
 import { getToken, removeToken, saveToken } from '../../utils/auth';
 import { getVideoDetailsFromCache, saveVideoDetailsToCache } from '../../utils/cache';
-import { baseUrl, getApiConfig } from '../../utils/config';
+import { baseUrl, getApiConfig, getAuthenticatedHeaders } from '../../utils/config';
 import { saveBlobAsFile } from '../../utils/download';
 import { YOUTUBE_SHORTS_REGEX, YOUTUBE_VIDEO_PAGE_REGEX } from '../background';
 import './style.css';
@@ -184,12 +184,11 @@ const App = () => {
       const token = await getToken();
       if (!token) throw new Error("User not authenticated.");
 
+      const headers = await getAuthenticatedHeaders();
+
       const response = await fetch(`${baseUrl}/api/video/download`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: headers,
         body: JSON.stringify({
           url: videoUrl,
           format_id: data.resolution,
@@ -221,12 +220,11 @@ const App = () => {
       const token = await getToken();
       if (!token) throw new Error("User not authenticated.");
 
+      const headers = await getAuthenticatedHeaders();
+
       const response = await fetch(`${baseUrl}/api/video/download/sample`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: headers,
         body: JSON.stringify({
           url: videoUrl,
           format_id: data.resolution,
@@ -260,7 +258,7 @@ const handleLogin = async () => {
         throw new Error('Could not get Google auth token.');
       }
 
-      const unauthConfig = await getApiConfig();
+      const unauthConfig = await getApiConfig(false);
       const authApiUnauth = new AuthApi(unauthConfig);
       const response = await authApiUnauth.loginGoogleTokenApiAuthLoginGoogleTokenPost({
         token: googleAuth.token,
@@ -276,6 +274,7 @@ const handleLogin = async () => {
       setUser(userData);
       setAuthStatus('authenticated');
     } catch (error) {
+      console.error("Login failed:", error);
       await removeToken();
       setUser(null);
       setAuthStatus('unauthenticated');
@@ -288,7 +287,7 @@ const handleLogin = async () => {
     setAuthStatus('unauthenticated');
   };
    const getMe = async (token: string): Promise<UserRead> => {
-    const config = await getApiConfig(token);
+    const config = await getApiConfig(true, token);
     const authApi = new AuthApi(config);
     return await authApi.meApiAuthMeGet();
   };
