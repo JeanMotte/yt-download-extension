@@ -9,68 +9,56 @@ export const YOUTUBE_VIDEO_PAGE_REGEX =
 export const YOUTUBE_SHORTS_REGEX =
   /^https?:\/\/(www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/;
 
-/**
- * Track the last known video URL for each tab
- * { tabId: "https://youtube.com/watch?v=..." }
- */
 const tabVideoUrlMap = new Map<number, string>();
 
-
-const updateSidePanelState = async (tabId: number, url: string | undefined) => {
+/**
+ * Updates the browser action state based on the URL.
+ * In Firefox, this will enable or disable the toolbar button that opens the sidebar.
+ */
+const updateActionState = async (tabId: number, url: string | undefined) => {
   const isVideoPage = !!url && YOUTUBE_VIDEO_PAGE_REGEX.test(url);
   
-  try {
-    await browser.sidePanel.setOptions({
-      tabId,
-      path: 'sidepanel.html', // Not index.html, as WXT generates sidepanel.html
-      enabled: isVideoPage,
-    });
+  await browser.browserAction.setTitle({ tabId, title: 'YouLoad' });
 
-
-    if (isVideoPage) {
-      await browser.action.enable(tabId);
-    } else {
-      await browser.sidePanel.setOptions({
-        enabled: false,
-      });
-      await browser.action.disable(tabId);
-    }
-  } catch (error) {
-    console.error(`[Side Panel] Error setting options for tab ${tabId}:`, error);
+  if (isVideoPage) {
+    // Enable the BUTTON, making it clickable.
+    await browser.browserAction.enable(tabId);
+  } else {
+    // Disable the BUTTON, making it gray and unclickable.
+    await browser.browserAction.disable(tabId);
   }
 };
 
 export default defineBackground(() => {
-  browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(error => {
-    console.error('[Side Panel] Error setting panel behavior:', error);
-  });
+  // We have NO browser.action.onClicked listener.
+  // The manifest's "sidebar_action" handles opening the panel automatically.
 
+  // The rest of your event listeners are correct and necessary.
   browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-    if (tab?.id) {
-      updateSidePanelState(tab.id, tab.url);
+    if (tab?.id && tab.url) {
+      updateActionState(tab.id, tab.url);
     }
   });
 
   browser.tabs.onActivated.addListener(async (activeInfo) => {
     try {
       const tab = await browser.tabs.get(activeInfo.tabId);
-      await updateSidePanelState(activeInfo.tabId, tab.url);
+      await updateActionState(activeInfo.tabId, tab.url);
     } catch (error) {
       console.error(`Error in onActivated for tab ${activeInfo.tabId}:`, error);
     }
   });
 
   browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    // Only run if the URL changes to avoid unnecessary updates
     if (changeInfo.url) {
       const previousUrl = tabVideoUrlMap.get(tabId);
       if (previousUrl && previousUrl !== changeInfo.url) {
         await clearVideoCache(previousUrl);
         tabVideoUrlMap.delete(tabId);
       }
-      await updateSidePanelState(tabId, changeInfo.url);
+      await updateActionState(tabId, changeInfo.url);
     }
-    // Update map only if it's a new, valid video URL
+    
     if (tab.url && YOUTUBE_VIDEO_PAGE_REGEX.test(tab.url)) {
       tabVideoUrlMap.set(tabId, tab.url);
     }

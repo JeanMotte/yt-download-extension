@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { browser } from 'wxt/browser';
 import { Layout } from '../../components/Layout';
@@ -58,7 +58,6 @@ const App = () => {
     };
     initializeApp();
   }, []);
-
   useEffect(() => {
     if (videoUrl) {
       setIsShortUrl(YOUTUBE_SHORTS_REGEX.test(videoUrl));
@@ -90,7 +89,7 @@ const App = () => {
       setVideoUrl(tab.url);
       
       // SINGLE API CALL: Get title, duration, and resolutions from your backend.
-      const config = await getApiConfig(token);
+      const config = await getApiConfig(true, token);
       const videoApi = new VideoApi(config);
       const formatsResponse = await videoApi.getFormatsApiVideoFormatsPost({ url: tab.url });
 
@@ -119,7 +118,7 @@ const App = () => {
       if (user) {
         const token = await getToken();
         if (token) {
-          await getVideoDetails(token);
+          await getVideoDetails(videoUrl, token);
         }
       }
     };
@@ -251,35 +250,54 @@ const App = () => {
   // --- Auth functions and component rendering ---
   
 const handleLogin = async () => {
-    try {
-      setAuthStatus('pending');
-      const googleAuth = await browser.identity.getAuthToken({ interactive: true });
-      if (!googleAuth?.token) {
-        throw new Error('Could not get Google auth token.');
-      }
+  try {
+    setAuthStatus('pending');
 
-      const unauthConfig = await getApiConfig(false);
-      const authApiUnauth = new AuthApi(unauthConfig);
-      const response = await authApiUnauth.loginGoogleTokenApiAuthLoginGoogleTokenPost({
-        token: googleAuth.token,
-      });
+    const redirectURL = browser.identity.getRedirectURL();
+    const clientID = import.meta.env.WXT_GOOGLE_CLIENT_ID; // Firefox google console client id
+    const scopes = 'email profile openid';
 
-      const appJwt = response.accessToken;
-      if (!appJwt) {
-        throw new Error("Login response did not contain an access_token.");
-      }
+    let authURL = 'https://accounts.google.com/o/oauth2/v2/auth';
+    authURL += `?client_id=${clientID}`;
+    authURL += '&response_type=token';
+    authURL += `&redirect_uri=${encodeURIComponent(redirectURL)}`;
+    authURL += `&scope=${encodeURIComponent(scopes)}`;
 
-      await saveToken(appJwt);
-      const userData = await getMe(appJwt);
-      setUser(userData);
-      setAuthStatus('authenticated');
-    } catch (error) {
-      console.error("Login failed:", error);
-      await removeToken();
-      setUser(null);
-      setAuthStatus('unauthenticated');
+    const responseURL = await browser.identity.launchWebAuthFlow({
+      interactive: true,
+      url: authURL,
+    });
+
+    // Extract the token from the response URL
+    const url = new URL(responseURL);
+    const token = url.hash.split('&')[0].split('=')[1];
+
+    if (!token) {
+      throw new Error('Could not get Google auth token.');
     }
-  };
+
+    const unauthConfig = await getApiConfig(false);
+    const authApiUnauth = new AuthApi(unauthConfig);
+    const response = await authApiUnauth.loginGoogleTokenApiAuthLoginGoogleTokenPost({
+      token: token,
+    });
+
+    const appJwt = response.accessToken;
+    if (!appJwt) {
+      throw new Error('Login response did not contain an access_token.');
+    }
+
+    await saveToken(appJwt);
+    const userData = await getMe(appJwt);
+    setUser(userData);
+    setAuthStatus('authenticated');
+  } catch (error) {
+    console.error('Login failed:', error);
+    await removeToken();
+    setUser(null);
+    setAuthStatus('unauthenticated');
+  }
+};
 
   const handleLogout = async () => {
     await removeToken();
@@ -356,7 +374,5 @@ const handleLogin = async () => {
 
 const root = ReactDOM.createRoot(document.getElementById('app')!);
 root.render(
-  <React.StrictMode>
     <App />
-  </React.StrictMode>
 );

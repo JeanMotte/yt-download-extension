@@ -12,7 +12,7 @@ declare module "wxt/browser" {
     | "/icon-16.png"
     | "/icon-32.png"
     | "/icon-48.png"
-    | "/sidepanel.html"
+    | "/popup.html"
     | "/youload-login.png"
     | "/youload-logo.svg"
     | "/youload-readme-short.png"

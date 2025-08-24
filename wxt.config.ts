@@ -13,22 +13,35 @@ export default defineConfig({
       '48': 'icon-48.png',
       '128': 'icon-128.png',
     },
-    permissions: ['identity', 'tabs', 'storage', 'downloads', 'sidePanel', 'cookies'],
-    oauth2: {
-      client_id: import.meta.env.WXT_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_OAUTH_CLIENT_ID',
-      scopes: ['openid', 'email', 'profile'],
-    },
+    permissions: [
+      'identity',
+      'tabs',
+      'storage',
+      'downloads',
+      'cookies',
+      "https://youload-service.onrender.com/*",
+      "*://*.youtube.com/",
+    ],
+    // oauth2: {
+    //   client_id: import.meta.env.WXT_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_OAUTH_CLIENT_ID',
+    //   scopes: ['openid', 'email', 'profile'],
+    // },
     browser_specific_settings: {
       gecko: {
         id: 'youload@wxt.dev',
       },
     },
-    action: {
+    browser_action: {
+      default_popup: "popup.html",
       default_title: 'YouLoad',
+      default_icon: {
+        "16": "icon-16.png",
+        "32": "icon-32.png",
+        
+      },
     },
-    host_permissions: [
-      "https://youload-service.onrender.com/*",
-      "*://*.youtube.com/",
-    ],
+    content_security_policy: {
+      extension_pages: "script-src 'self' 'unsafe-eval'; object-src 'self'; connect-src 'self' ws://localhost:3000 https://youload-service.onrender.com;"
+    },
   }),
 });
