@@ -54,6 +54,15 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 1 }}>
+            <Button
+            onClick={onDownloadSample}
+            sx={{ textTransform: 'none', width: isShortUrl ? '50%' : '100%', border: isShortUrl ? '1px solid' : 'none' }}
+            disabled={isDownloadingSample || !isValid || isDownloadingAny}
+            startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
+            variant={isShortUrl ? 'outlined' : 'contained'}
+          >
+            {isDownloadingSample ? <CircularProgress size={24} /> : isShortUrl ? 'Sample' : 'Download Sample'}
+          </Button>
             {isShortUrl && <Box width="50%">
               <Button
                 onClick={onDownloadFull}
@@ -65,14 +74,6 @@ export const VideoDownloaderForm: React.FC<VideoDownloaderFormProps> = ({
               {isDownloadingFull ? <CircularProgress size={24} /> : 'Full Short'}
               </Button>
             </Box>}
-          <Button
-            onClick={onDownloadSample}
-            sx={{ textTransform: 'none', width: isShortUrl ? '50%' : '100%', border: '1px solid' }}
-            disabled={isDownloadingSample || !isValid || isDownloadingAny}
-            startIcon={isDownloadingSample ? null : <i className="ti ti-download" />}
-          >
-            {isDownloadingSample ? <CircularProgress size={24} /> : isShortUrl ? 'Sample' : 'Download Sample'}
-          </Button>
         </Box>
       </Box>
     </form>
